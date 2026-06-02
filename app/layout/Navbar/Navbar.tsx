@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Button from "@/app/shared/Button/Button";
+import { AUTH_ROUTES } from "@/app/modules/website/auth/constants/routes";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -19,6 +20,7 @@ const NAV_LINKS = [
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   // Close menu on route change
@@ -114,6 +116,8 @@ const Navbar = () => {
             width="w-[92px]"
             height="h-[51px]"
             className="shadow-[0_1px_0_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm"
+            type="button"
+            onClick={() => router.push(AUTH_ROUTES.signup)}
           />
           <Button
             label="Take Placement Test"
@@ -215,6 +219,11 @@ const Navbar = () => {
               textColorClass="text-text-primary"
               width="w-full"
               height="h-[51px]"
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                router.push(AUTH_ROUTES.signup);
+              }}
             />
             <Button
               label="Take Placement Test"

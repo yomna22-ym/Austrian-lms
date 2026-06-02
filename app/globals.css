@@ -17,6 +17,13 @@
   --color-input-border: var(--primitive-neutral-100);
   --radius-input: 8px;
 
+  /* Auth shell — 1440px layout (515px + 924px) */
+  --auth-shell-max: 90rem;
+  --auth-panel-left: 515px;
+  --auth-form-sm: 26.25rem;
+  --auth-form-md: 30rem;
+  --auth-form-lg: 40rem;
+
   /* App shell aliases */
   --background: var(--color-primary);
   --foreground: var(--color-text-primary);
@@ -55,5 +62,96 @@ body {
 
   .input-base::placeholder {
     color: var(--color-text-secondary);
+  }
+
+  /* Auth shell layout — full viewport width (no side gutters) */
+  .auth-shell {
+    width: 100%;
+    min-height: 100dvh;
+  }
+
+  .auth-panel-left {
+    position: relative;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .auth-panel-right {
+    position: relative;
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    background-color: var(--background);
+  }
+
+  .auth-panel-right__scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .auth-form-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .auth-form-stack {
+      gap: 2rem;
+    }
+  }
+
+  .auth-form-title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  @media (min-width: 640px) {
+    .auth-form-title {
+      font-size: 1.875rem;
+      line-height: 2.25rem;
+    }
+  }
+
+  .auth-form-subtitle {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--color-text-secondary);
+  }
+
+  .auth-otp-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.375rem;
+    width: 100%;
+    max-width: 22.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .auth-otp-grid {
+      gap: 0.5rem;
+      max-width: 100%;
+    }
+  }
+
+  .auth-otp-slot {
+    height: 2.75rem;
+    width: 100%;
+    min-width: 0;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  @media (min-width: 640px) {
+    .auth-otp-slot {
+      height: 3.25rem;
+      font-size: 1.125rem;
+    }
   }
 }
