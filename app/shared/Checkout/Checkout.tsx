@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Shield, HelpCircle } from "lucide-react";
+import { Shield, HelpCircle, Lock, ShieldCheck, CircleCheck } from "lucide-react";
 import Input from "@/app/shared/Input/Input";
 import Button from "@/app/shared/Button/Button";
 
@@ -127,12 +127,10 @@ const TrustBadges = () => (
     <p className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">
       Trusted by
     </p>
-    <div className="flex items-center gap-3">
-      {["🔒", "🛡️", "✅"].map((e, i) => (
-        <span key={i} className="text-base" aria-hidden="true">
-          {e}
-        </span>
-      ))}
+    <div className="flex items-center gap-4">
+      <Lock className="h-5 w-5 text-text-secondary" aria-hidden="true" />
+      <ShieldCheck className="h-5 w-5 text-secondary" aria-hidden="true" />
+      <CircleCheck className="h-5 w-5 text-[#16a34a]" aria-hidden="true" />
     </div>
   </div>
 );

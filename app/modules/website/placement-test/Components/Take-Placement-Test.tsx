@@ -20,11 +20,7 @@ const INFO_PILLS = [
     label: "Listening & Reading",
     sub: "Adaptive questioning",
   },
-  {
-    icon: <RefreshCw className="h-4 w-4" aria-hidden="true" />,
-    label: "2 Attempts",
-    sub: "Number of attempts per payment",
-  },
+
 ] as const;
 
 const ROADMAP_STEPS = [
@@ -69,9 +65,19 @@ const TakePlacementTest: React.FC = () => {
               </span>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 items-center gap-4 border-y border-input-border py-6 sm:mt-8 sm:grid-cols-3 sm:items-stretch sm:gap-0 sm:divide-x sm:divide-input-border sm:py-8">
-              {INFO_PILLS.map((pill) => (
-                <InfoPill key={pill.label} {...pill} />
+            <div className="mt-6 flex flex-col items-center gap-6 border-y border-input-border py-6 sm:mt-8 sm:flex-row sm:justify-center sm:gap-0 sm:py-8">
+              {INFO_PILLS.map((pill, index) => (
+                <React.Fragment key={pill.label}>
+                  {index > 0 && (
+                    <div
+                      className="hidden h-14 w-px shrink-0 self-center bg-input-border sm:block"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <div className="flex w-full max-w-[220px] justify-center sm:min-w-0 sm:flex-1 sm:basis-0 sm:max-w-none">
+                    <InfoPill {...pill} />
+                  </div>
+                </React.Fragment>
               ))}
             </div>
 
