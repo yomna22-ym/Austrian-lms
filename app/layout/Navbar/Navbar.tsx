@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "@/app/shared/Button/Button";
-import { AUTH_ROUTES } from "@/app/modules/website/auth/constants/routes";
+import { AUTH_ROUTES, WEBSITE_ROUTES } from "@/app/modules/website/auth/constants/routes";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -126,6 +126,8 @@ const Navbar = () => {
             width="w-[185px]"
             height="h-[51px]"
             className="shadow-sm hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:brightness-95 active:shadow-sm"
+            type="button"
+            onClick={() => router.push(WEBSITE_ROUTES.placementTest)}
           />
         </div>
 
@@ -232,6 +234,11 @@ const Navbar = () => {
               width="w-full"
               height="h-[51px]"
               className="shadow-sm"
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                router.push(WEBSITE_ROUTES.placementTest);
+              }}
             />
           </div>
         </nav>

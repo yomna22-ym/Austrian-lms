@@ -154,4 +154,29 @@ body {
       font-size: 1.125rem;
     }
   }
+
+  @keyframes roadmap-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes step-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 0 4px rgba(185, 19, 23, 0.12);
+    }
+    50% {
+      box-shadow: 0 0 0 6px rgba(185, 19, 23, 0.2);
+    }
+  }
+
+  .animate-step-glow {
+    animation: step-glow 2.5s ease-in-out infinite;
+  }
 }
