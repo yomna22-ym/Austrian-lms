@@ -1,26 +1,59 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primitives — single source of truth for raw values */
+  --primitive-white: #ffffff;
+  --primitive-brand: #b91317;
+  --primitive-neutral-100: #e2e2e2;
+  --primitive-neutral-900: #111315;
+  --primitive-neutral-600: #5f5e5e;
+
+  /* Semantics — role-based tokens */
+  --color-primary: var(--primitive-white);
+  --color-secondary: var(--primitive-brand);
+  --color-text-primary: var(--primitive-neutral-900);
+  --color-text-secondary: var(--primitive-neutral-600);
+  --color-input-bg: var(--primitive-neutral-100);
+  --color-input-border: var(--primitive-neutral-100);
+  --radius-input: 8px;
+
+  /* App shell aliases */
+  --background: var(--color-primary);
+  --foreground: var(--color-text-primary);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-muted-foreground: var(--color-text-secondary);
+  --color-input-bg: var(--color-input-bg);
+  --color-input-border: var(--color-input-border);
+  --radius-input: var(--radius-input);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Custom desktop breakpoint — desktop layout activates at 1200px */
+  --breakpoint-nav: 75rem;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+@layer components {
+  .input-base {
+    background-color: var(--color-input-bg);
+    border: 1px solid var(--color-input-border);
+    border-radius: var(--radius-input);
+    color: var(--color-text-primary);
+  }
+
+  .input-base::placeholder {
+    color: var(--color-text-secondary);
+  }
 }
