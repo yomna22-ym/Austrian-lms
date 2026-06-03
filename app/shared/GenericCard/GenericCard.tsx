@@ -770,7 +770,7 @@ function BlogCard({
 
       <div
         className={[
-          "flex min-h-0 flex-1 flex-col",
+          "flex min-h-0 flex-1 flex-col text-left",
           isWide ? "p-6" : "p-4",
           isSplit ? "justify-center" : "",
           sectionClasses(fieldLayout.body, false) ||
@@ -819,7 +819,7 @@ function BlogCard({
         {hasFooter && (
           <div
             className={[
-              "mt-auto flex border-t border-neutral-100 pt-3 text-[11px] text-text-secondary",
+              "mt-auto flex w-full gap-3 border-t border-neutral-100 pt-3 text-[11px] text-text-secondary",
               sectionClasses(fieldLayout.footer) || "justify-between items-center",
             ].join(" ")}
           >
