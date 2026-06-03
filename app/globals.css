@@ -179,4 +179,28 @@ body {
   .animate-step-glow {
     animation: step-glow 2.5s ease-in-out infinite;
   }
+
+  .branch-marker-icon {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .price-range-slider::-webkit-slider-thumb {
+    appearance: none;
+    height: 1.125rem;
+    width: 1.125rem;
+    border-radius: 9999px;
+    border: 2px solid var(--color-secondary);
+    background: var(--color-primary);
+    cursor: pointer;
+  }
+
+  .price-range-slider::-moz-range-thumb {
+    height: 1.125rem;
+    width: 1.125rem;
+    border-radius: 9999px;
+    border: 2px solid var(--color-secondary);
+    background: var(--color-primary);
+    cursor: pointer;
+  }
 }
