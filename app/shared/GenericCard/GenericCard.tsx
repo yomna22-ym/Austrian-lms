@@ -31,7 +31,7 @@ export interface SectionLayout {
 
 /** Default pixel sizes per templated variant (Figma). */
 export const CARD_TEMPLATE_SIZES = {
-  course: { width: 336, height: 473 },
+  course: { width: 369, height: 520 },
   event: { width: 424, height: 552 },
   blog: { width: 389, height: 397 },
 } as const;
@@ -230,12 +230,12 @@ const DEFAULT_COURSE_META: MetaItem[] = [
 const DEFAULT_BG = "bg-white";
 
 const SHELL_BASE =
-  "rounded-2xl overflow-hidden shadow-sm border border-neutral-100 flex flex-col";
+  "group/card rounded-[32px] overflow-hidden shadow-[0_10px_28px_rgba(17,19,21,0.06)] border border-[#f3dfdd] flex flex-col transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(185,19,23,0.12)]";
 
 const DEFAULT_COURSE_FIELDS: CourseFieldsLayout = {
-  header: { justify: "between", align: "center" },
-  body: { align: "start", className: "gap-4" },
-  meta: { align: "start", className: "gap-3" },
+  header: { justify: "between", align: "center", className: "gap-3" },
+  body: { align: "stretch" },
+  meta: { align: "start", className: "gap-4" },
   footer: { align: "stretch" },
 };
 
@@ -286,7 +286,7 @@ function resolveSize(
   height: number | string
 ): ResolvedSize {
   const style: React.CSSProperties = {};
-  const classes: string[] = ["shrink-0"];
+  const classes: string[] = ["max-w-full", "shrink-0"];
 
   if (typeof width === "number") style.width = width;
   else if (width.startsWith("w-")) classes.push(width);
@@ -378,50 +378,51 @@ function CourseCard({
     >
       <div
         className={[
-          "flex min-h-0 flex-1 flex-col",
+          "flex min-h-0 flex-1 flex-col px-6 py-7 text-left sm:px-9 sm:py-10",
           sectionClasses(layout.body, false) || "gap-0",
         ].join(" ")}
       >
-        <div className="flex flex-col gap-4 p-6 pb-5">
-          {(badge || price) && (
-            <div
-              className={sectionClasses(
-                layout.header ?? { justify: "between", align: "center" }
-              )}
-            >
-              {badge ? (
-                <span
-                  className={[
-                    badgeClassName ??
-                      "rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary",
-                    sectionClasses(layout.badge, false),
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                >
-                  {badge}
-                </span>
-              ) : (
-                <span />
-              )}
-              {price && (
-                <span
-                  className={[
-                    priceClassName ?? "text-xl font-extrabold text-secondary",
-                    sectionClasses(layout.price, false),
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                >
-                  {price}
-                </span>
-              )}
-            </div>
-          )}
+        {(badge || price) && (
+          <div
+            className={sectionClasses(
+              layout.header ?? { justify: "between", align: "center" }
+            )}
+          >
+            {badge ? (
+              <span
+                className={[
+                  badgeClassName ??
+                    "min-w-0 whitespace-nowrap rounded-full bg-[#f4f4f4] px-4 py-3 text-center text-sm font-medium uppercase leading-none text-secondary",
+                  sectionClasses(layout.badge, false),
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                {badge}
+              </span>
+            ) : (
+              <span />
+            )}
+            {price && (
+              <span
+                className={[
+                  priceClassName ??
+                    "shrink-0 text-[30px] font-extrabold leading-none text-secondary",
+                  sectionClasses(layout.price, false),
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+              >
+                {price}
+              </span>
+            )}
+          </div>
+        )}
 
+        <div className="pt-12">
           <h3
             className={[
-              "text-xl font-bold leading-snug text-text-primary",
+              "text-[28px] font-bold leading-tight text-text-primary",
               sectionClasses(layout.title, false),
             ]
               .filter(Boolean)
@@ -433,7 +434,7 @@ function CourseCard({
           {description && (
             <p
               className={[
-                "text-sm leading-relaxed text-text-secondary",
+                "mt-7 text-[21px] leading-[1.55] text-text-secondary",
                 sectionClasses(layout.description, false),
               ]
                 .filter(Boolean)
@@ -444,21 +445,23 @@ function CourseCard({
           )}
         </div>
 
-        {meta.length > 0 && <hr className="border-neutral-100" />}
-
         {meta.length > 0 && (
           <div
             className={[
-              "flex flex-col px-6 py-4",
+              "mt-10 flex flex-col border-t border-[#f4e3e1] pt-7",
               sectionClasses(layout.meta) || "gap-3",
             ].join(" ")}
           >
             {meta.map((item, i) => (
-              <div key={i} className="flex items-center gap-2.5">
+              <div key={i} className="flex items-center gap-5">
                 {item.icon && (
-                  <span className="shrink-0 text-secondary">{item.icon}</span>
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center text-secondary">
+                    {item.icon}
+                  </span>
                 )}
-                <span className="text-sm text-text-secondary">{item.text}</span>
+                <span className="text-[17px] leading-snug text-[#6f7680]">
+                  {item.text}
+                </span>
               </div>
             ))}
           </div>
@@ -466,16 +469,18 @@ function CourseCard({
 
         <div
           className={[
-            "mt-auto px-6 pb-6 pt-2",
+            "mt-auto pt-8",
             sectionClasses(layout.footer, false),
           ].join(" ")}
         >
           <Button
             label={ctaLabel}
             width="w-full"
+            height="h-[56px]"
             bgColorClass={ctaBgColorClass ?? "bg-secondary"}
             textColorClass="text-primary"
             onClick={onCtaClick}
+            className="rounded-[18px] text-lg font-bold shadow-[0_10px_18px_rgba(17,19,21,0.14)] hover:brightness-105 active:translate-y-0.5"
           />
         </div>
       </div>
@@ -769,7 +774,7 @@ function BlogCard({
 // ─── Custom (composable fields) ──────────────────────────────────────────────
 
 const DEFAULT_CUSTOM_FIELDS: CustomFieldsLayout = {
-  header: { justify: "between", align: "center" },
+  header: { justify: "between", align: "center", className: "gap-3" },
   body: { align: "start", className: "gap-4 flex-1" },
   meta: { align: "start", className: "gap-3" },
   footer: { justify: "between", align: "center" },
@@ -788,6 +793,7 @@ function resolveCustomSections(props: Omit<CustomCardProps, "variant">): CustomS
   if (props.location) order.push("location");
   if (props.title) order.push("title");
   if (props.description) order.push("description");
+  if (props.meta?.length && props.ctaStyle === "full") order.push("divider");
   if (props.meta?.length) order.push("meta");
   if (props.ctaLabel || props.onCtaClick || props.price) order.push("cta");
   if (props.children) order.push("children");
@@ -797,6 +803,7 @@ function resolveCustomSections(props: Omit<CustomCardProps, "variant">): CustomS
 type CardSectionContext = Omit<CustomCardProps, "variant" | "sections"> & {
   fields: CustomFieldsLayout;
   contentClassName: string;
+  presentation?: "course";
 };
 
 function renderCardSection(
@@ -879,7 +886,9 @@ function renderCardSection(
             <span
               className={
                 ctx.badgeClassName ??
-                "rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary"
+                (ctx.presentation === "course"
+                  ? "min-w-0 whitespace-nowrap rounded-full bg-[#f4f4f4] px-4 py-3 text-center text-sm font-medium uppercase leading-none text-secondary"
+                  : "rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary")
               }
             >
               {ctx.badge}
@@ -890,7 +899,10 @@ function renderCardSection(
           {priceInHeader && (
             <span
               className={
-                ctx.priceClassName ?? "text-xl font-extrabold text-secondary"
+                ctx.priceClassName ??
+                (ctx.presentation === "course"
+                  ? "shrink-0 text-[30px] font-extrabold leading-none text-secondary"
+                  : "text-xl font-extrabold text-secondary")
               }
             >
               {ctx.price}
@@ -938,7 +950,9 @@ function renderCardSection(
         <h3
           key="title"
           className={[
-            "text-xl font-bold leading-snug text-text-primary",
+            ctx.presentation === "course"
+              ? "pt-12 text-[28px] font-bold leading-tight text-text-primary"
+              : "text-xl font-bold leading-snug text-text-primary",
             ctx.titleClassName,
             sectionClasses(layout.title, false),
           ]
@@ -955,7 +969,9 @@ function renderCardSection(
         <p
           key="description"
           className={[
-            "text-sm leading-relaxed text-text-secondary",
+            ctx.presentation === "course"
+              ? "text-[21px] leading-[1.55] text-text-secondary"
+              : "text-sm leading-relaxed text-text-secondary",
             ctx.descriptionClassName,
             sectionClasses(layout.description, false),
           ]
@@ -974,14 +990,39 @@ function renderCardSection(
           className={[
             "flex flex-col",
             sectionClasses(layout.meta) || "gap-3",
-          ].join(" ")}
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           {ctx.meta.map((item, i) => (
-            <div key={i} className="flex items-center gap-2.5">
+            <div
+              key={i}
+              className={
+                ctx.presentation === "course"
+                  ? "flex items-center gap-5"
+                  : "flex items-center gap-2.5"
+              }
+            >
               {item.icon && (
-                <span className="shrink-0 text-secondary">{item.icon}</span>
+                <span
+                  className={
+                    ctx.presentation === "course"
+                      ? "flex h-6 w-6 shrink-0 items-center justify-center text-secondary"
+                      : "shrink-0 text-secondary"
+                  }
+                >
+                  {item.icon}
+                </span>
               )}
-              <span className="text-sm text-text-secondary">{item.text}</span>
+              <span
+                className={
+                  ctx.presentation === "course"
+                    ? "text-[17px] leading-snug text-[#6f7680]"
+                    : "text-sm text-text-secondary"
+                }
+              >
+                {item.text}
+              </span>
             </div>
           ))}
         </div>
@@ -989,7 +1030,16 @@ function renderCardSection(
     }
 
     case "divider":
-      return <hr key="divider" className="border-neutral-100" />;
+      return (
+        <hr
+          key="divider"
+          className={
+            ctx.presentation === "course"
+              ? "border-[#f4e3e1]"
+              : "border-neutral-100"
+          }
+        />
+      );
 
     case "cta": {
       const useRow =
@@ -1038,14 +1088,25 @@ function renderCardSection(
       return (
         <div
           key="cta"
-          className={sectionClasses(layout.footer ?? { align: "stretch" }, false)}
+          className={[
+            ctx.presentation === "course" ? "mt-auto pt-1" : "",
+            sectionClasses(layout.footer ?? { align: "stretch" }, false),
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           <Button
             label={ctx.ctaLabel ?? "Book"}
             width="w-full"
+            height={ctx.presentation === "course" ? "h-16" : undefined}
             bgColorClass={ctx.ctaBgColorClass ?? "bg-secondary"}
             textColorClass="text-primary"
             onClick={ctx.onCtaClick}
+            className={
+              ctx.presentation === "course"
+                ? "rounded-[18px] text-lg font-bold shadow-[0_10px_18px_rgba(17,19,21,0.14)] hover:brightness-105 active:translate-y-0.5"
+                : undefined
+            }
           />
         </div>
       );
@@ -1082,7 +1143,7 @@ function CustomCard(props: Omit<CustomCardProps, "variant">) {
     height,
     bgClassName = DEFAULT_BG,
     className = "",
-    contentClassName = "p-6",
+    contentClassName,
     fields,
     children,
     onRead,
@@ -1092,11 +1153,19 @@ function CustomCard(props: Omit<CustomCardProps, "variant">) {
 
   const layout = { ...DEFAULT_CUSTOM_FIELDS, ...fields };
   const sections = resolveCustomSections({ ...content, children, sections: sectionsProp });
+  const usesCoursePresentation =
+    !content.image &&
+    content.ctaStyle === "full" &&
+    (Boolean(content.badge) || Boolean(content.price)) &&
+    Boolean(content.title);
   const ctx: CardSectionContext = {
     ...content,
     children,
     fields: layout,
-    contentClassName,
+    contentClassName:
+      contentClassName ??
+      (usesCoursePresentation ? "px-6 py-7 sm:px-9 sm:py-10" : "p-6"),
+    presentation: usesCoursePresentation ? "course" : undefined,
   };
 
   const size =
@@ -1114,8 +1183,11 @@ function CustomCard(props: Omit<CustomCardProps, "variant">) {
         <div
           className={[
             "flex min-h-0 flex-1 flex-col",
-            contentClassName,
-            sectionClasses(layout.body, false) || "gap-4",
+            ctx.contentClassName,
+            usesCoursePresentation ? "text-left" : "",
+            usesCoursePresentation
+              ? "gap-7"
+              : sectionClasses(layout.body, false) || "gap-4",
           ].join(" ")}
         >
           {innerSections.map((key) => renderCardSection(key, ctx))}
@@ -1178,6 +1250,7 @@ const GenericCard: React.FC<GenericCardProps> = (props) => {
         height = CARD_TEMPLATE_SIZES.course.height,
         ...rest
       } = props;
+      void _;
       return <CourseCard width={width} height={height} {...rest} />;
     }
     case "event": {
@@ -1187,6 +1260,7 @@ const GenericCard: React.FC<GenericCardProps> = (props) => {
         height = CARD_TEMPLATE_SIZES.event.height,
         ...rest
       } = props;
+      void _;
       return <EventCard width={width} height={height} {...rest} />;
     }
     case "blog": {
@@ -1196,10 +1270,12 @@ const GenericCard: React.FC<GenericCardProps> = (props) => {
         height = CARD_TEMPLATE_SIZES.blog.height,
         ...rest
       } = props;
+      void _;
       return <BlogCard width={width} height={height} {...rest} />;
     }
     case "custom": {
       const { variant: _, ...rest } = props;
+      void _;
       return <CustomCard {...rest} />;
     }
   }

@@ -39,10 +39,11 @@ export default function HomePage() {
 <GenericCard
   variant="course"
   badge="A1.1 BEGINNER"
-  width={336}
-  height={473}
+  width={369}
+  height={530}
   price="800 EGP"
   title="German Foundation"
+  
   
   description="Start your journey with basic phrases and essential grammar."
   meta={[
@@ -80,16 +81,20 @@ export default function HomePage() {
 />
 <GenericCard
   variant="custom"
-  width={389}
-  height={397}
-  badge="CUSTOM"
-  title="Build Your Own Card"
-  description="Mix any fields — badge, meta, CTA — and control order with sections."
-  meta={[{ text: "Fully composable via props" }]}
-  ctaLabel="Learn More"
+  width={369}
+  height={520}
+  badge="B2.1 INTERMEDIATE"
+  price="800 EGP"
+  title="Professional German"
+  description="Refine your skills for workplace communication and complex social interactions."
+  meta={[
+    { icon: <CalendarDays size={24} />, text: "8 Weeks | Start: Oct 12" },
+    { icon: <Users size={24} />, text: "24 Sessions (90 min each)" },
+  ]}
+  ctaLabel="Book Course"
   ctaStyle="full"
-  onCtaClick={() => router.push("/about")}
-  sections={["header", "title", "description", "meta", "divider", "cta"]}
+  onCtaClick={() => router.push("/courses/1")}
+  sections={["header", "title", "description", "divider", "meta", "cta"]}
 />
       </div>
 <HeroSection
