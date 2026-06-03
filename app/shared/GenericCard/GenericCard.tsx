@@ -36,6 +36,12 @@ export const CARD_TEMPLATE_SIZES = {
   blog: { width: 292, height: 320 },
 } as const;
 
+const BLOG_TEMPLATE_SIZES = {
+  compact: { width: 300, height: 312 },
+  wide: { width: 650, height: 408 },
+  split: { width: 400, height: 205 },
+} as const;
+
 // ─── Layout config per variant ───────────────────────────────────────────────
 
 export interface CourseFieldsLayout {
@@ -68,6 +74,7 @@ export interface BlogFieldsLayout {
   category?: SectionLayout;
   title?: SectionLayout;
   description?: SectionLayout;
+  footer?: SectionLayout;
 }
 
 /** Layout slots for custom cards — union of all variant field layouts. */
@@ -187,6 +194,12 @@ export interface BlogCardProps extends BaseCardProps {
   category?: string;
   title: string;
   description?: string;
+  /** Easy presets for the 3 blog designs: image-top, wide feature, or side-image. */
+  blogStyle?: "compact" | "wide" | "split";
+  authorName?: string;
+  authorAvatar?: string;
+  readTime?: string;
+  imageHeight?: number | string;
   layout?: "horizontal" | "vertical";
   onRead?: () => void;
   /** Image column width when layout is horizontal (Tailwind width class) */
@@ -247,7 +260,8 @@ const DEFAULT_EVENT_FIELDS: EventFieldsLayout = {
 };
 
 const DEFAULT_BLOG_FIELDS: BlogFieldsLayout = {
-  body: { align: "start", className: "gap-2 justify-center" },
+  body: { align: "start" },
+  footer: { justify: "between", align: "center" },
 };
 
 // ─── Layout helpers ──────────────────────────────────────────────────────────
@@ -653,8 +667,8 @@ function EventCard({
 // ─── Blog ────────────────────────────────────────────────────────────────────
 
 function BlogCard({
-  width = CARD_TEMPLATE_SIZES.blog.width,
-  height = CARD_TEMPLATE_SIZES.blog.height,
+  width,
+  height,
   bgClassName,
   image,
   imageAlt = "",
@@ -662,27 +676,42 @@ function BlogCard({
   category,
   title,
   description,
+  blogStyle,
+  authorName,
+  authorAvatar,
+  readTime,
+  imageHeight,
   layout = "vertical",
   imageWidthClass,
   onRead,
   fields,
   className = "",
 }: Omit<BlogCardProps, "variant">) {
-  const isHorizontal = layout === "horizontal";
+  const resolvedStyle = blogStyle ?? (layout === "horizontal" ? "split" : "compact");
+  const isSplit = resolvedStyle === "split";
+  const isWide = resolvedStyle === "wide";
   const fieldLayout = { ...DEFAULT_BLOG_FIELDS, ...fields };
+  const cardSize = BLOG_TEMPLATE_SIZES[resolvedStyle];
+  const resolvedWidth = width ?? cardSize.width;
+  const resolvedHeight = height ?? cardSize.height;
+  const imageBlock = resolveBlockSize(
+    imageHeight,
+    isWide ? "h-[205px]" : "h-[145px]"
+  );
 
-  const imageColumnClass = isHorizontal
+  const imageColumnClass = isSplit
     ? imageWidthClass ??
-      (featured ? "w-[52%] max-[360px]:w-full" : "w-[40%] max-[360px]:w-full")
+      "w-[46%] max-[360px]:w-full"
     : "w-full";
+  const hasFooter = Boolean(authorName || readTime);
 
   return (
     <CardShell
-      width={width}
-      height={height}
+      width={resolvedWidth}
+      height={resolvedHeight}
       bgClassName={bgClassName}
       className={[
-        isHorizontal ? "flex-row max-[360px]:flex-col" : "",
+        isSplit ? "flex-row max-[360px]:flex-col" : "",
         onRead ? "cursor-pointer" : "",
         className,
       ]
@@ -698,18 +727,27 @@ function BlogCard({
           className={[
             "relative shrink-0 overflow-hidden",
             imageColumnClass,
-            isHorizontal ? "h-full min-h-0 max-[360px]:h-[170px]" : "aspect-video",
+            isSplit
+              ? "h-full min-h-0 max-[360px]:h-[170px]"
+              : imageBlock.className,
             sectionClasses(fieldLayout.image, false),
           ]
             .filter(Boolean)
             .join(" ")}
+          style={!isSplit ? imageBlock.style : undefined}
         >
           <Image
             src={image}
             alt={imageAlt}
             fill
             className="object-cover"
-            sizes="(max-width: 640px) 100vw, 292px"
+            sizes={
+              isWide
+                ? "(max-width: 768px) 100vw, 650px"
+                : isSplit
+                  ? "(max-width: 640px) 46vw, 184px"
+                  : "(max-width: 640px) 100vw, 300px"
+            }
           />
 
           {featured && (
@@ -733,8 +771,10 @@ function BlogCard({
       <div
         className={[
           "flex min-h-0 flex-1 flex-col",
-          "p-4",
-          sectionClasses(fieldLayout.body) || "gap-2 justify-center",
+          isWide ? "p-6" : "p-4",
+          isSplit ? "justify-center" : "",
+          sectionClasses(fieldLayout.body, false) ||
+            (isWide ? "gap-3" : "gap-2"),
         ].join(" ")}
       >
         {category && (
@@ -752,8 +792,8 @@ function BlogCard({
 
         <h3
           className={[
-            "font-bold leading-snug text-text-primary",
-            featured ? "text-[17px]" : "text-[15px]",
+            "font-semibold leading-snug text-text-primary",
+            isWide ? "text-xl" : isSplit ? "text-lg" : "text-[15px]",
             sectionClasses(fieldLayout.title, false),
           ]
             .filter(Boolean)
@@ -765,7 +805,8 @@ function BlogCard({
         {description && (
           <p
             className={[
-              "text-xs leading-relaxed text-text-secondary",
+              "text-text-secondary",
+              isWide ? "text-sm leading-relaxed" : "text-xs leading-relaxed",
               sectionClasses(fieldLayout.description, false),
             ]
               .filter(Boolean)
@@ -773,6 +814,33 @@ function BlogCard({
           >
             {description}
           </p>
+        )}
+
+        {hasFooter && (
+          <div
+            className={[
+              "mt-auto flex border-t border-neutral-100 pt-3 text-[11px] text-text-secondary",
+              sectionClasses(fieldLayout.footer) || "justify-between items-center",
+            ].join(" ")}
+          >
+            {authorName && (
+              <span className="flex min-w-0 items-center gap-2 font-medium text-text-primary">
+                {authorAvatar && (
+                  <span className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full">
+                    <Image
+                      src={authorAvatar}
+                      alt={authorName}
+                      fill
+                      className="object-cover"
+                      sizes="20px"
+                    />
+                  </span>
+                )}
+                <span className="truncate">{authorName}</span>
+              </span>
+            )}
+            {readTime && <span className="shrink-0">{readTime}</span>}
+          </div>
         )}
       </div>
     </CardShell>
@@ -1269,8 +1337,8 @@ const GenericCard: React.FC<GenericCardProps> = (props) => {
     case "blog": {
       const {
         variant: _,
-        width = CARD_TEMPLATE_SIZES.blog.width,
-        height = CARD_TEMPLATE_SIZES.blog.height,
+        width,
+        height,
         ...rest
       } = props;
       void _;
