@@ -1,48 +1,21 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
 import { Clock, BookOpen, RefreshCw, Shield, ArrowRight } from "lucide-react";
 import Button from "@/app/shared/Button/Button";
-import InfoPill from "./InfoPill";
-import ProcessRoadmap from "./ProcessRoadmap";
-import SummaryRow from "./SummaryRow";
-import { PLACEMENT_TEST_ROUTES } from "../constants/routes";
+import InfoPill from "./ui/info-pill";
+import ProcessRoadmap from "./ui/process-roadmap";
+import SummaryRow from "./ui/summary-row";
+import { PLACEMENT_INFO_PILLS, PLACEMENT_ROADMAP_STEPS } from "../utils";
+import { usePlacementNavigation } from "../hooks";
 
-const INFO_PILLS = [
-  {
-    icon: <Clock className="h-4 w-4" aria-hidden="true" />,
-    label: "45-60 min",
-    sub: "Estimated duration",
-  },
-  {
-    icon: <BookOpen className="h-4 w-4" aria-hidden="true" />,
-    label: "Listening & Reading",
-    sub: "Adaptive questioning",
-  },
-
-] as const;
-
-const ROADMAP_STEPS = [
-  {
-    step: 1,
-    title: "Confirm Details",
-    sub: "Verify your profile & location",
-  },
-  {
-    step: 2,
-    title: "Secure Payment",
-    sub: "Instant digital processing",
-  },
-  {
-    step: 3,
-    title: "Start Test",
-    sub: "Get results immediately",
-  },
-] as const;
+const INFO_PILL_ICONS = {
+  clock: <Clock className="h-4 w-4" aria-hidden="true" />,
+  book: <BookOpen className="h-4 w-4" aria-hidden="true" />,
+} as const;
 
 const TakePlacementTest: React.FC = () => {
-  const router = useRouter();
+  const { goToCheckout } = usePlacementNavigation();
 
   return (
     <section className="w-full bg-white py-10 sm:py-12 lg:py-16">
@@ -66,7 +39,7 @@ const TakePlacementTest: React.FC = () => {
             </div>
 
             <div className="mt-6 flex flex-col items-center gap-6 border-y border-input-border py-6 sm:mt-8 sm:flex-row sm:justify-center sm:gap-0 sm:py-8">
-              {INFO_PILLS.map((pill, index) => (
+              {PLACEMENT_INFO_PILLS.map((pill, index) => (
                 <React.Fragment key={pill.label}>
                   {index > 0 && (
                     <div
@@ -75,14 +48,18 @@ const TakePlacementTest: React.FC = () => {
                     />
                   )}
                   <div className="flex w-full max-w-[220px] justify-center sm:min-w-0 sm:flex-1 sm:basis-0 sm:max-w-none">
-                    <InfoPill {...pill} />
+                    <InfoPill
+                      icon={INFO_PILL_ICONS[pill.iconKey]}
+                      label={pill.label}
+                      sub={pill.sub}
+                    />
                   </div>
                 </React.Fragment>
               ))}
             </div>
 
             <div className="mt-8 pt-2">
-              <ProcessRoadmap steps={ROADMAP_STEPS} currentStep={2} />
+              <ProcessRoadmap steps={PLACEMENT_ROADMAP_STEPS} currentStep={2} />
             </div>
           </div>
 
@@ -119,7 +96,7 @@ const TakePlacementTest: React.FC = () => {
                 className="mt-6 shadow-sm hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm"
                 icon={<ArrowRight className="h-4 w-4" aria-hidden="true" />}
                 iconPosition="right"
-                onClick={() => router.push(PLACEMENT_TEST_ROUTES.checkout)}
+                onClick={goToCheckout}
               />
 
               <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-text-secondary">

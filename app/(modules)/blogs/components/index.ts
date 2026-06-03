@@ -1,0 +1,1 @@
+/** BlogsPage components */
