@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Button from "@/app/shared/Button/Button";
-import { AUTH_ROUTES, WEBSITE_ROUTES } from "@/app/modules/website/auth/constants/routes";
+import { AUTH_ROUTES, WEBSITE_ROUTES } from "@/app/constants/routes";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },

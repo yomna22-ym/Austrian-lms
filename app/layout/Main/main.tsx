@@ -11,7 +11,7 @@ interface MainProps {
 
 const Main = ({ children }: MainProps) => {
   const pathname = usePathname();
-  const isAuthRoute = pathname?.startsWith("/modules/website/auth");
+  const isAuthRoute = pathname?.startsWith("/auth");
 
   if (isAuthRoute) {
     return <>{children}</>;
