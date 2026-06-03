@@ -31,9 +31,9 @@ export interface SectionLayout {
 
 /** Default pixel sizes per templated variant (Figma). */
 export const CARD_TEMPLATE_SIZES = {
-  course: { width: 369, height: 520 },
-  event: { width: 488, height: 760 },
-  blog: { width: 389, height: 397 },
+  course: { width: 292, height: 420 },
+  event: { width: 350, height: 500 },
+  blog: { width: 292, height: 320 },
 } as const;
 
 // ─── Layout config per variant ───────────────────────────────────────────────
@@ -123,12 +123,12 @@ export type CustomSectionKey =
 interface TemplatedCardShellProps {
   /**
    * Card width — number = px, string = Tailwind class (`w-[400px]`) or CSS value.
-   * Defaults: course 336, event 424, blog 389.
+   * Defaults: course 292, event 350, blog 292.
    */
   width: number | string;
   /**
    * Card height — number = px, string = Tailwind class (`h-[500px]`) or CSS value.
-   * Defaults: course 473, event 552, blog 397.
+   * Defaults: course 420, event 500, blog 320.
    */
   height: number | string;
   /** Background Tailwind class — default `bg-white`. */
@@ -230,7 +230,7 @@ const DEFAULT_COURSE_META: MetaItem[] = [
 const DEFAULT_BG = "bg-white";
 
 const SHELL_BASE =
-  "group/card rounded-[32px] overflow-hidden shadow-[0_10px_28px_rgba(17,19,21,0.06)] border border-[#f3dfdd] flex flex-col transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(185,19,23,0.12)]";
+  "group/card rounded-[24px] overflow-hidden shadow-[0_10px_28px_rgba(17,19,21,0.06)] border border-[#f3dfdd] flex flex-col transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(185,19,23,0.12)]";
 
 const DEFAULT_COURSE_FIELDS: CourseFieldsLayout = {
   header: { justify: "between", align: "center", className: "gap-3" },
@@ -241,7 +241,7 @@ const DEFAULT_COURSE_FIELDS: CourseFieldsLayout = {
 
 const DEFAULT_EVENT_FIELDS: EventFieldsLayout = {
   image: { align: "start" },
-  dateBadge: { className: "left-7 top-7" },
+  dateBadge: { className: "left-4 top-4" },
   body: { align: "stretch", className: "flex-1" },
   footer: { justify: "between", align: "center" },
 };
@@ -286,7 +286,7 @@ function resolveSize(
   height: number | string
 ): ResolvedSize {
   const style: React.CSSProperties = {};
-  const classes: string[] = ["max-w-full", "shrink-0"];
+  const classes: string[] = ["shrink-0"];
 
   if (typeof width === "number") style.width = width;
   else if (width.startsWith("w-")) classes.push(width);
@@ -378,7 +378,7 @@ function CourseCard({
     >
       <div
         className={[
-          "flex min-h-0 flex-1 flex-col px-6 py-7 text-left sm:px-9 sm:py-10",
+          "flex min-h-0 flex-1 flex-col px-5 py-6 text-left",
           sectionClasses(layout.body, false) || "gap-0",
         ].join(" ")}
       >
@@ -392,7 +392,7 @@ function CourseCard({
               <span
                 className={[
                   badgeClassName ??
-                    "min-w-0 whitespace-nowrap rounded-full bg-[#f4f4f4] px-4 py-3 text-center text-sm font-medium uppercase leading-none text-secondary",
+                    "min-w-0 whitespace-nowrap rounded-full bg-[#f4f4f4] px-3 py-2 text-center text-[11px] font-medium uppercase leading-none text-secondary",
                   sectionClasses(layout.badge, false),
                 ]
                   .filter(Boolean)
@@ -407,7 +407,7 @@ function CourseCard({
               <span
                 className={[
                   priceClassName ??
-                    "shrink-0 text-[30px] font-extrabold leading-none text-secondary",
+                    "shrink-0 text-[24px] font-extrabold leading-none text-secondary",
                   sectionClasses(layout.price, false),
                 ]
                   .filter(Boolean)
@@ -419,10 +419,10 @@ function CourseCard({
           </div>
         )}
 
-        <div className="pt-12">
+        <div className="pt-9">
           <h3
             className={[
-              "text-[28px] font-bold leading-tight text-text-primary",
+              "text-[22px] font-bold leading-tight text-text-primary",
               sectionClasses(layout.title, false),
             ]
               .filter(Boolean)
@@ -434,7 +434,7 @@ function CourseCard({
           {description && (
             <p
               className={[
-                "mt-7 text-[21px] leading-[1.55] text-text-secondary",
+                "mt-5 text-[16px] leading-[1.55] text-text-secondary",
                 sectionClasses(layout.description, false),
               ]
                 .filter(Boolean)
@@ -448,18 +448,18 @@ function CourseCard({
         {meta.length > 0 && (
           <div
             className={[
-              "mt-10 flex flex-col border-t border-[#f4e3e1] pt-7",
+              "mt-7 flex flex-col border-t border-[#f4e3e1] pt-5",
               sectionClasses(layout.meta) || "gap-3",
             ].join(" ")}
           >
             {meta.map((item, i) => (
-              <div key={i} className="flex items-center gap-5">
+              <div key={i} className="flex items-center gap-3">
                 {item.icon && (
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center text-secondary">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center text-secondary">
                     {item.icon}
                   </span>
                 )}
-                <span className="text-[17px] leading-snug text-[#6f7680]">
+                <span className="text-[13px] leading-snug text-[#6f7680]">
                   {item.text}
                 </span>
               </div>
@@ -469,18 +469,18 @@ function CourseCard({
 
         <div
           className={[
-            "mt-auto pt-8",
+            "mt-auto pt-6",
             sectionClasses(layout.footer, false),
           ].join(" ")}
         >
           <Button
             label={ctaLabel}
             width="w-full"
-            height="h-[56px]"
+            height="h-12"
             bgColorClass={ctaBgColorClass ?? "bg-secondary"}
             textColorClass="text-primary"
             onClick={onCtaClick}
-            className="rounded-[18px] text-lg font-bold shadow-[0_10px_18px_rgba(17,19,21,0.14)] hover:brightness-105 active:translate-y-0.5"
+            className="rounded-[14px] text-base font-bold shadow-[0_8px_14px_rgba(17,19,21,0.12)] hover:brightness-105 active:translate-y-0.5"
           />
         </div>
       </div>
@@ -510,19 +510,19 @@ function EventCard({
   className = "",
 }: Omit<EventCardProps, "variant">) {
   const layout = { ...DEFAULT_EVENT_FIELDS, ...fields };
-  const imageBlock = resolveBlockSize(imageHeight, "h-[287px]");
+  const imageBlock = resolveBlockSize(imageHeight, "h-[188px]");
 
   return (
     <CardShell
       width={width}
       height={height}
       bgClassName={bgClassName}
-      className={["p-6 text-left sm:p-7", className].filter(Boolean).join(" ")}
+      className={["p-4 text-left", className].filter(Boolean).join(" ")}
     >
       {image && (
         <div
           className={[
-            "relative w-full shrink-0 overflow-hidden rounded-[20px]",
+            "relative w-full shrink-0 overflow-hidden rounded-[16px]",
             imageBlock.className,
             sectionClasses(layout.image, false),
           ]
@@ -535,23 +535,23 @@ function EventCard({
             alt={imageAlt}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, 424px"
+            sizes="(max-width: 640px) 100vw, 320px"
           />
 
           {dateBadge && (
             <div
               className={[
-                "absolute flex h-[105px] w-[72px] flex-col items-center justify-center rounded-[18px] bg-secondary text-white shadow-[0_12px_24px_rgba(17,19,21,0.18)]",
+                "absolute flex h-[70px] w-[52px] flex-col items-center justify-center rounded-[14px] bg-secondary text-white shadow-[0_10px_18px_rgba(17,19,21,0.16)]",
                 sectionClasses(
-                  layout.dateBadge ?? { className: "left-7 top-7" },
+                  layout.dateBadge ?? { className: "left-4 top-4" },
                   false
                 ),
               ].join(" ")}
             >
-              <span className="text-[34px] font-extrabold leading-none">
+              <span className="text-[24px] font-extrabold leading-none">
                 {dateBadge.day}
               </span>
-              <span className="mt-2 text-[18px] font-medium uppercase leading-none">
+              <span className="mt-1 text-[12px] font-medium uppercase leading-none">
                 {dateBadge.month}
               </span>
             </div>
@@ -561,14 +561,14 @@ function EventCard({
 
       <div
         className={[
-          "flex min-h-0 flex-1 flex-col pt-8",
+          "flex min-h-0 flex-1 flex-col pt-5",
           sectionClasses(layout.body, false) || "gap-0",
         ].join(" ")}
       >
         {location && (
           <span
             className={[
-              "text-[18px] font-bold uppercase leading-none tracking-[0.14em] text-secondary",
+              "text-[12px] font-bold uppercase leading-none tracking-[0.14em] text-secondary",
               sectionClasses(layout.location, false),
             ]
               .filter(Boolean)
@@ -580,7 +580,7 @@ function EventCard({
 
         <h3
           className={[
-            "mt-6 text-[34px] font-bold leading-tight text-text-primary",
+            "mt-4 text-[22px] font-bold leading-tight text-text-primary",
             sectionClasses(layout.title, false),
           ]
             .filter(Boolean)
@@ -592,7 +592,7 @@ function EventCard({
         {description && (
           <p
             className={[
-              "mt-6 text-[23px] leading-[1.55] text-text-secondary",
+              "mt-4 text-[15px] leading-[1.5] text-text-secondary",
               sectionClasses(layout.description, false),
             ]
               .filter(Boolean)
@@ -602,11 +602,11 @@ function EventCard({
           </p>
         )}
 
-        <hr className="mt-7 border-[#e7c5c2]" />
+        <hr className="mt-5 border-[#e7c5c2]" />
 
         <div
           className={[
-            "mt-auto pt-8",
+            "mt-auto gap-3 pt-5 max-[340px]:flex-col max-[340px]:items-stretch",
             sectionClasses(layout.footer ?? { justify: "between", align: "center" }),
           ]
             .filter(Boolean)
@@ -616,7 +616,7 @@ function EventCard({
             <span
               className={[
                 priceClassName ??
-                  "shrink-0 text-[32px] font-extrabold leading-none text-secondary",
+                  "shrink-0 text-[24px] font-extrabold leading-none text-secondary",
                 sectionClasses(layout.price, false),
               ]
                 .filter(Boolean)
@@ -631,13 +631,13 @@ function EventCard({
               onClick={onCtaClick}
               bgColorClass="bg-secondary"
               textColorClass="text-primary"
-              width={showArrow ? "w-[244px]" : "w-[150px]"}
-              height="h-[74px]"
+              width={showArrow ? "w-[150px] max-[340px]:w-full" : "w-[120px] max-[340px]:w-full"}
+              height="h-[50px]"
               showArrowRight={showArrow}
               className={[
-                "relative overflow-hidden rounded-full text-[20px] font-bold shadow-none hover:brightness-105 active:translate-y-0.5",
+                "relative overflow-hidden rounded-full text-[14px] font-bold shadow-none hover:brightness-105 active:translate-y-0.5",
                 showArrow
-                  ? "gap-0 pl-6 pr-[72px] [&>span:last-child]:absolute [&>span:last-child]:right-2 [&>span:last-child]:top-1/2 [&>span:last-child]:flex [&>span:last-child]:h-[58px] [&>span:last-child]:w-[58px] [&>span:last-child]:-translate-y-1/2 [&>span:last-child]:items-center [&>span:last-child]:justify-center [&>span:last-child]:rounded-full [&>span:last-child]:bg-[#db7274] [&>span:last-child]:text-white [&>span:last-child]:transition-transform [&>span:last-child]:duration-300 group-hover/card:[&>span:last-child]:translate-x-1 group-hover/card:[&>span:last-child]:-translate-y-1/2"
+                  ? "gap-0 pl-4 pr-[48px] [&>span:last-child]:absolute [&>span:last-child]:right-1.5 [&>span:last-child]:top-1/2 [&>span:last-child]:flex [&>span:last-child]:h-[38px] [&>span:last-child]:w-[38px] [&>span:last-child]:-translate-y-1/2 [&>span:last-child]:items-center [&>span:last-child]:justify-center [&>span:last-child]:rounded-full [&>span:last-child]:bg-[#db7274] [&>span:last-child]:text-white [&>span:last-child]:transition-transform [&>span:last-child]:duration-300 group-hover/card:[&>span:last-child]:translate-x-0.5 group-hover/card:[&>span:last-child]:-translate-y-1/2"
                   : "",
               ]
                 .filter(Boolean)
@@ -673,7 +673,7 @@ function BlogCard({
 
   const imageColumnClass = isHorizontal
     ? imageWidthClass ??
-      (featured ? "w-[58%]" : "w-[38%]")
+      (featured ? "w-[52%] max-[360px]:w-full" : "w-[40%] max-[360px]:w-full")
     : "w-full";
 
   return (
@@ -682,7 +682,7 @@ function BlogCard({
       height={height}
       bgClassName={bgClassName}
       className={[
-        isHorizontal ? "flex-row" : "",
+        isHorizontal ? "flex-row max-[360px]:flex-col" : "",
         onRead ? "cursor-pointer" : "",
         className,
       ]
@@ -698,7 +698,7 @@ function BlogCard({
           className={[
             "relative shrink-0 overflow-hidden",
             imageColumnClass,
-            isHorizontal ? "h-full min-h-0" : "aspect-video",
+            isHorizontal ? "h-full min-h-0 max-[360px]:h-[170px]" : "aspect-video",
             sectionClasses(fieldLayout.image, false),
           ]
             .filter(Boolean)
@@ -709,7 +709,7 @@ function BlogCard({
             alt={imageAlt}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, 600px"
+            sizes="(max-width: 640px) 100vw, 292px"
           />
 
           {featured && (
@@ -733,14 +733,14 @@ function BlogCard({
       <div
         className={[
           "flex min-h-0 flex-1 flex-col",
-          isHorizontal ? "p-6" : "p-5",
+          "p-4",
           sectionClasses(fieldLayout.body) || "gap-2 justify-center",
         ].join(" ")}
       >
         {category && (
           <span
             className={[
-              "text-[11px] font-bold uppercase tracking-widest text-secondary",
+              "text-[10px] font-bold uppercase tracking-widest text-secondary",
               sectionClasses(fieldLayout.category, false),
             ]
               .filter(Boolean)
@@ -753,7 +753,7 @@ function BlogCard({
         <h3
           className={[
             "font-bold leading-snug text-text-primary",
-            featured ? "text-xl" : "text-base",
+            featured ? "text-[17px]" : "text-[15px]",
             sectionClasses(fieldLayout.title, false),
           ]
             .filter(Boolean)
@@ -765,7 +765,7 @@ function BlogCard({
         {description && (
           <p
             className={[
-              "text-sm leading-relaxed text-text-secondary",
+              "text-xs leading-relaxed text-text-secondary",
               sectionClasses(fieldLayout.description, false),
             ]
               .filter(Boolean)
@@ -895,7 +895,7 @@ function renderCardSection(
               className={
                 ctx.badgeClassName ??
                 (ctx.presentation === "course"
-                  ? "min-w-0 whitespace-nowrap rounded-full bg-[#f4f4f4] px-4 py-3 text-center text-sm font-medium uppercase leading-none text-secondary"
+                  ? "min-w-0 whitespace-nowrap rounded-full bg-[#f4f4f4] px-3 py-2 text-center text-[11px] font-medium uppercase leading-none text-secondary"
                   : "rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-text-secondary")
               }
             >
@@ -909,7 +909,7 @@ function renderCardSection(
               className={
                 ctx.priceClassName ??
                 (ctx.presentation === "course"
-                  ? "shrink-0 text-[30px] font-extrabold leading-none text-secondary"
+                  ? "shrink-0 text-[24px] font-extrabold leading-none text-secondary"
                   : "text-xl font-extrabold text-secondary")
               }
             >
@@ -959,7 +959,7 @@ function renderCardSection(
           key="title"
           className={[
             ctx.presentation === "course"
-              ? "pt-12 text-[28px] font-bold leading-tight text-text-primary"
+              ? "pt-9 text-[22px] font-bold leading-tight text-text-primary"
               : "text-xl font-bold leading-snug text-text-primary",
             ctx.titleClassName,
             sectionClasses(layout.title, false),
@@ -978,7 +978,7 @@ function renderCardSection(
           key="description"
           className={[
             ctx.presentation === "course"
-              ? "text-[21px] leading-[1.55] text-text-secondary"
+              ? "text-[16px] leading-[1.55] text-text-secondary"
               : "text-sm leading-relaxed text-text-secondary",
             ctx.descriptionClassName,
             sectionClasses(layout.description, false),
@@ -1007,7 +1007,7 @@ function renderCardSection(
               key={i}
               className={
                 ctx.presentation === "course"
-                  ? "flex items-center gap-5"
+                  ? "flex items-center gap-3"
                   : "flex items-center gap-2.5"
               }
             >
@@ -1015,7 +1015,7 @@ function renderCardSection(
                 <span
                   className={
                     ctx.presentation === "course"
-                      ? "flex h-6 w-6 shrink-0 items-center justify-center text-secondary"
+                      ? "flex h-5 w-5 shrink-0 items-center justify-center text-secondary"
                       : "shrink-0 text-secondary"
                   }
                 >
@@ -1025,7 +1025,7 @@ function renderCardSection(
               <span
                 className={
                   ctx.presentation === "course"
-                    ? "text-[17px] leading-snug text-[#6f7680]"
+                    ? "text-[13px] leading-snug text-[#6f7680]"
                     : "text-sm text-text-secondary"
                 }
               >
@@ -1101,13 +1101,13 @@ function renderCardSection(
           <Button
             label={ctx.ctaLabel ?? "Book"}
             width="w-full"
-            height={ctx.presentation === "course" ? "h-16" : undefined}
+            height={ctx.presentation === "course" ? "h-12" : undefined}
             bgColorClass={ctx.ctaBgColorClass ?? "bg-secondary"}
             textColorClass="text-primary"
             onClick={ctx.onCtaClick}
             className={
               ctx.presentation === "course"
-                ? "rounded-[18px] text-lg font-bold shadow-[0_10px_18px_rgba(17,19,21,0.14)] hover:brightness-105 active:translate-y-0.5"
+                ? "rounded-[14px] text-base font-bold shadow-[0_8px_14px_rgba(17,19,21,0.12)] hover:brightness-105 active:translate-y-0.5"
                 : undefined
             }
           />
@@ -1167,7 +1167,7 @@ function CustomCard(props: Omit<CustomCardProps, "variant">) {
     fields: layout,
     contentClassName:
       contentClassName ??
-      (usesCoursePresentation ? "px-6 py-7 sm:px-9 sm:py-10" : "p-6"),
+      (usesCoursePresentation ? "px-5 py-6" : "p-5"),
     presentation: usesCoursePresentation ? "course" : undefined,
   };
 
@@ -1189,7 +1189,7 @@ function CustomCard(props: Omit<CustomCardProps, "variant">) {
             ctx.contentClassName,
             usesCoursePresentation ? "text-left" : "",
             usesCoursePresentation
-              ? "gap-7"
+              ? "gap-5"
               : sectionClasses(layout.body, false) || "gap-4",
           ].join(" ")}
         >
