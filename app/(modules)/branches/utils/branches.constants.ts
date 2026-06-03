@@ -10,33 +10,13 @@ export const BRANCHES_HERO: BranchesHeroContent = {
 export const GLOBAL_LOCATIONS: readonly GlobalLocation[] = [
   { id: "austria", country: "Austria", cities: "Vienna (Headquarters)" },
   { id: "italia", country: "Italia", cities: "Rome" },
-  {
-    id: "poland",
-    country: "Poland",
-    cities: "Warsaw, Krakow, Wroclaw",
-  },
-  {
-    id: "slovakia",
-    country: "Slovakia",
-    cities: "Bratislava, Kosice, Presov",
-  },
-  {
-    id: "hungary",
-    country: "Hungary",
-    cities: "Budapest, Esztergom, Szolnok",
-  },
-  {
-    id: "egypt",
-    country: "Egypt",
-    cities: "Cairo, Alexandria, Sharm El Sheikh, Hurghada",
-  },
+  { id: "poland", country: "Poland", cities: "Warsaw, Krakow, Wroclaw" },
+  { id: "slovakia", country: "Slovakia", cities: "Bratislava" },
+  { id: "hungary", country: "Hungary", cities: "Budapest" },
+  { id: "egypt", country: "Egypt", cities: "Cairo, Alexandria" },
   { id: "serbia", country: "Serbia", cities: "Belgrade" },
-  {
-    id: "bosnia",
-    country: "Bosnia and Herzegovina",
-    cities: "Banja Luka",
-  },
-  { id: "russia", country: "Russia", cities: "Moscow, St. Petersburg" },
+  { id: "bosnia", country: "Bosnia and Herzegovina", cities: "Sarajevo" },
+  { id: "russia", country: "Russia", cities: "Moscow" },
   { id: "czech", country: "Czech Republic", cities: "Brno" },
 ];
 
@@ -85,7 +65,7 @@ export const GLOBAL_PRESENCE_COPY = {
   label: "OUR NETWORK",
   title: "Our Global Presence",
   description:
-    "From Vienna to Cairo, our institutes bring Austrian German education to learners worldwide. Same quality, same standards — wherever you are.",
+    "Discover our network of official institutes across the globe. From Europe to Asia, we provide the same high standards of Austrian German education.",
 };
 
 export const EGYPT_BRANCHES_COPY = {

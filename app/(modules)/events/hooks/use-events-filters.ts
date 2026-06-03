@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { EventFilters, EventItem, EventTypeFilter } from "../types";
 import { DEFAULT_MAX_PRICE } from "../utils";
 
@@ -39,21 +39,26 @@ function filterEvents(
     if (filters.selectedDate && !isSameDay(event.date, filters.selectedDate)) {
       return false;
     }
-
     if (filters.eventType !== "all" && event.type !== filters.eventType) {
       return false;
     }
-
     if (filters.location !== "all" && event.location !== filters.location) {
       return false;
     }
-
     if (event.price > filters.maxPrice) {
       return false;
     }
-
     return true;
   });
+}
+
+function getActiveFilterCount(filters: EventFilters, defaultMaxPrice: number): number {
+  let count = 0;
+  if (filters.selectedDate) count++;
+  if (filters.eventType !== "all") count++;
+  if (filters.location !== "all") count++;
+  if (filters.maxPrice < defaultMaxPrice) count++;
+  return count;
 }
 
 export function useEventsFilters(events: readonly EventItem[]) {
@@ -64,37 +69,65 @@ export function useEventsFilters(events: readonly EventItem[]) {
     maxPrice: DEFAULT_MAX_PRICE,
   });
 
+  const filterKeyRef = useRef(0);
+  const [filterKey, setFilterKey] = useState(0);
+
+  const bumpFilterKey = () => {
+    filterKeyRef.current += 1;
+    setFilterKey(filterKeyRef.current);
+  };
+
   const locations = useMemo(() => getUniqueLocations(events), [events]);
   const eventDates = useMemo(() => getEventDates(events), [events]);
   const filteredEvents = useMemo(
     () => filterEvents(events, filters),
     [events, filters]
   );
+  const activeFilterCount = useMemo(
+    () => getActiveFilterCount(filters, DEFAULT_MAX_PRICE),
+    [filters]
+  );
 
   const setSelectedDate = (selectedDate: Date | null) => {
     setFilters((current) => ({ ...current, selectedDate }));
+    bumpFilterKey();
   };
 
   const setEventType = (eventType: EventTypeFilter) => {
     setFilters((current) => ({ ...current, eventType }));
+    bumpFilterKey();
   };
 
   const setLocation = (location: string) => {
     setFilters((current) => ({ ...current, location }));
+    bumpFilterKey();
   };
 
   const setMaxPrice = (maxPrice: number) => {
     setFilters((current) => ({ ...current, maxPrice }));
   };
 
+  const clearAllFilters = () => {
+    setFilters({
+      selectedDate: null,
+      eventType: "all",
+      location: "all",
+      maxPrice: DEFAULT_MAX_PRICE,
+    });
+    bumpFilterKey();
+  };
+
   return {
     filters,
+    filterKey,
     locations,
     eventDates,
     filteredEvents,
+    activeFilterCount,
     setSelectedDate,
     setEventType,
     setLocation,
     setMaxPrice,
+    clearAllFilters,
   };
 }

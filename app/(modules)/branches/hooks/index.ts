@@ -1,1 +1,1 @@
-/** hooks */
+export { useReveal } from "./use-reveal";

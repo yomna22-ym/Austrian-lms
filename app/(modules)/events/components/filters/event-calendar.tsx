@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface EventCalendarProps {
   selectedDate: Date | null;
@@ -19,25 +19,30 @@ function isSameDay(a: Date, b: Date): boolean {
   );
 }
 
-function startOfMonth(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
 function addMonths(date: Date, count: number): Date {
   return new Date(date.getFullYear(), date.getMonth() + count, 1);
 }
 
-function getCalendarDays(month: Date): Date[] {
-  const firstDay = startOfMonth(month);
+function getCalendarRows(month: Date): Date[][] {
+  const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
   const startOffset = (firstDay.getDay() + 6) % 7;
   const gridStart = new Date(firstDay);
   gridStart.setDate(firstDay.getDate() - startOffset);
 
-  return Array.from({ length: 42 }, (_, index) => {
+  const allDays = Array.from({ length: 42 }, (_, i) => {
     const day = new Date(gridStart);
-    day.setDate(gridStart.getDate() + index);
+    day.setDate(gridStart.getDate() + i);
     return day;
   });
+
+  const rows: Date[][] = [];
+  for (let r = 0; r < 6; r++) {
+    const row = allDays.slice(r * 7, r * 7 + 7);
+    // Skip last row if entirely outside the current month
+    const hasCurrentMonth = row.some((d) => d.getMonth() === month.getMonth());
+    if (hasCurrentMonth) rows.push(row);
+  }
+  return rows;
 }
 
 export default function EventCalendar({
@@ -48,8 +53,11 @@ export default function EventCalendar({
   const [visibleMonth, setVisibleMonth] = useState(
     () => selectedDate ?? eventDates[0] ?? new Date(2025, 9, 1)
   );
+  const [slideDir, setSlideDir] = useState<"left" | "right" | null>(null);
+  const [animKey, setAnimKey] = useState(0);
+  const prevMonth = useRef(visibleMonth);
 
-  const days = useMemo(() => getCalendarDays(visibleMonth), [visibleMonth]);
+  const rows = useMemo(() => getCalendarRows(visibleMonth), [visibleMonth]);
 
   const monthLabel = visibleMonth.toLocaleDateString("en-US", {
     month: "long",
@@ -57,77 +65,119 @@ export default function EventCalendar({
   });
 
   const hasEvent = (date: Date) =>
-    eventDates.some((eventDate) => isSameDay(eventDate, date));
+    eventDates.some((ed) => isSameDay(ed, date));
+
+  const navigateMonth = (direction: -1 | 1) => {
+    setSlideDir(direction === 1 ? "left" : "right");
+    setAnimKey((k) => k + 1);
+    prevMonth.current = visibleMonth;
+    setVisibleMonth((current) => addMonths(current, direction));
+  };
+
+  useEffect(() => {
+    if (slideDir) {
+      const timer = setTimeout(() => setSlideDir(null), 350);
+      return () => clearTimeout(timer);
+    }
+  }, [slideDir]);
 
   const handleDayClick = (day: Date) => {
     if (selectedDate && isSameDay(selectedDate, day)) {
       onDateChange(null);
-      return;
+    } else {
+      onDateChange(day);
     }
-    onDateChange(day);
   };
 
+  const slideClass =
+    slideDir === "left"
+      ? "animate-events-slide-left"
+      : slideDir === "right"
+        ? "animate-events-slide-right"
+        : "";
+
   return (
-    <div className="rounded-2xl border border-[#f3dfdd] bg-white p-4 shadow-[0_8px_24px_rgba(17,19,21,0.06)]">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="overflow-hidden rounded-2xl border border-[#f3dfdd] bg-white shadow-[0_8px_24px_rgba(17,19,21,0.06)]">
+      {/* Month navigation */}
+      <div className="flex items-center justify-between px-4 pb-3 pt-4">
         <button
           type="button"
           aria-label="Previous month"
-          onClick={() => setVisibleMonth((current) => addMonths(current, -1))}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-[#fff7f7] hover:text-text-primary"
+          onClick={() => navigateMonth(-1)}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-text-secondary transition-all duration-150 hover:bg-[#fff7f7] hover:text-text-primary active:scale-90"
         >
-          <ChevronLeft size={18} />
+          <ChevronLeft size={17} />
         </button>
         <p className="text-sm font-semibold text-text-primary">{monthLabel}</p>
         <button
           type="button"
           aria-label="Next month"
-          onClick={() => setVisibleMonth((current) => addMonths(current, 1))}
-          className="flex h-8 w-8 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-[#fff7f7] hover:text-text-primary"
+          onClick={() => navigateMonth(1)}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-text-secondary transition-all duration-150 hover:bg-[#fff7f7] hover:text-text-primary active:scale-90"
         >
-          <ChevronRight size={18} />
+          <ChevronRight size={17} />
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-y-1 text-center">
-        {WEEKDAYS.map((weekday) => (
-          <span
-            key={weekday}
-            className="pb-2 text-[11px] font-medium uppercase text-text-secondary"
-          >
-            {weekday}
-          </span>
-        ))}
-
-        {days.map((day) => {
-          const inCurrentMonth = day.getMonth() === visibleMonth.getMonth();
-          const isSelected = selectedDate ? isSameDay(selectedDate, day) : false;
-          const showEventDot = hasEvent(day);
-
-          return (
-            <button
-              key={day.toISOString()}
-              type="button"
-              onClick={() => handleDayClick(day)}
-              className={[
-                "relative mx-auto flex h-9 w-9 flex-col items-center justify-center rounded-full text-sm transition-colors",
-                !inCurrentMonth && "text-text-secondary/40",
-                inCurrentMonth && !isSelected && "text-text-primary hover:bg-[#fff7f7]",
-                isSelected && "bg-secondary text-primary",
-              ]
-                .filter(Boolean)
-                .join(" ")}
+      <div className="px-4 pb-4">
+        {/* Weekday headers — static */}
+        <div className="grid grid-cols-7 text-center">
+          {WEEKDAYS.map((wd) => (
+            <span
+              key={wd}
+              className="pb-2 text-[11px] font-semibold uppercase tracking-wide text-text-secondary"
             >
-              <span>{day.getDate()}</span>
-              {showEventDot && !isSelected && (
-                <span
-                  aria-hidden="true"
-                  className="absolute bottom-1 h-1 w-1 rounded-full bg-secondary"
-                />
-              )}
-            </button>
-          );
-        })}
+              {wd}
+            </span>
+          ))}
+        </div>
+
+        {/* Animated day grid */}
+        <div
+          key={animKey}
+          className={["grid grid-cols-7 gap-y-1 text-center", slideClass]
+            .filter(Boolean)
+            .join(" ")}
+        >
+          {rows.map((row, rowIdx) =>
+            row.map((day) => {
+              const inCurrentMonth = day.getMonth() === visibleMonth.getMonth();
+              const isSelected = Boolean(selectedDate && isSameDay(selectedDate, day));
+              const showDot = hasEvent(day) && inCurrentMonth && !isSelected;
+
+              return (
+                <button
+                  key={`${rowIdx}-${day.toISOString()}`}
+                  type="button"
+                  onClick={() => inCurrentMonth && handleDayClick(day)}
+                  disabled={!inCurrentMonth}
+                  aria-pressed={isSelected}
+                  aria-label={day.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                  className={[
+                    "relative mx-auto flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium transition-all duration-150",
+                    !inCurrentMonth && "cursor-default text-text-secondary/30",
+                    inCurrentMonth && !isSelected && "cursor-pointer text-text-primary hover:bg-[#fff7f7] active:scale-95",
+                    isSelected && "bg-secondary text-white shadow-[0_2px_8px_rgba(185,19,23,0.35)]",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  <span className={showDot ? "mb-1.5" : ""}>{day.getDate()}</span>
+                  {showDot && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute bottom-1.5 h-1 w-1 rounded-full bg-secondary"
+                    />
+                  )}
+                </button>
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );

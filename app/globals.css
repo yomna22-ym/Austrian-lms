@@ -185,22 +185,177 @@ body {
     border: none !important;
   }
 
+  /* ── Branch page scroll-reveal animations ─────────────────────────── */
+  @keyframes branch-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes branch-fade-left {
+    from {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes branch-scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-branch-fade-up {
+    animation: branch-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-branch-fade-left {
+    animation: branch-fade-left 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-branch-scale-in {
+    animation: branch-scale-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* ── Events page animations ──────────────────────────────────────── */
+  @keyframes event-card-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes events-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes events-slide-left {
+    from {
+      opacity: 0;
+      transform: translateX(-24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes events-slide-right {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes events-drawer-in {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes events-backdrop-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .animate-event-card-in {
+    animation: event-card-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-events-fade-in {
+    animation: events-fade-in 0.3s ease both;
+  }
+
+  .animate-events-slide-left {
+    animation: events-slide-left 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-events-slide-right {
+    animation: events-slide-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-events-drawer-in {
+    animation: events-drawer-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-events-backdrop-in {
+    animation: events-backdrop-in 0.2s ease both;
+  }
+
   .price-range-slider::-webkit-slider-thumb {
     appearance: none;
-    height: 1.125rem;
-    width: 1.125rem;
+    height: 1.25rem;
+    width: 1.25rem;
     border-radius: 9999px;
-    border: 2px solid var(--color-secondary);
+    border: 2.5px solid var(--color-secondary);
     background: var(--color-primary);
     cursor: pointer;
+    box-shadow: 0 2px 6px rgba(185, 19, 23, 0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .price-range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 3px 10px rgba(185, 19, 23, 0.35);
   }
 
   .price-range-slider::-moz-range-thumb {
-    height: 1.125rem;
-    width: 1.125rem;
+    height: 1.25rem;
+    width: 1.25rem;
     border-radius: 9999px;
-    border: 2px solid var(--color-secondary);
+    border: 2.5px solid var(--color-secondary);
     background: var(--color-primary);
     cursor: pointer;
+    box-shadow: 0 2px 6px rgba(185, 19, 23, 0.25);
   }
+}
+
+/* ── Leaflet popup overrides ──────────────────────────────────────────── */
+.leaflet-popup-content-wrapper {
+  border-radius: 10px !important;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 1px 4px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 10px 14px !important;
+  font-family: var(--font-sans), system-ui, sans-serif !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  color: var(--primitive-neutral-900) !important;
+  white-space: nowrap;
+}
+
+.leaflet-popup-tip-container {
+  margin-top: -1px;
+}
+
+.leaflet-popup-tip {
+  box-shadow: none !important;
+  background: #fff !important;
 }
