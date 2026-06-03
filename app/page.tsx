@@ -43,14 +43,11 @@ export default function HomePage() {
   height={530}
   price="800 EGP"
   title="German Foundation"
-  
-  
   description="Start your journey with basic phrases and essential grammar."
   meta={[
     { icon: <CalendarDays size={18} />, text: "8 Weeks | Start: Oct 15" },
     { icon: <Users size={18} />,        text: "24 Sessions (90 min each)" },
   ]}
-  
   ctaLabel="Book Course"
   onCtaClick={() => router.push("/courses/1")}
 />
@@ -58,12 +55,12 @@ export default function HomePage() {
 <GenericCard
   variant="event"
   image="/event.png"
-  width={424}
-  height={552}
+  width={488}
+  height={760}
   dateBadge={{ day: 24, month: "OCT" }}
   location="Campus Vienna"
   title="Viennese Language Café"
-  description="Practice conversation skills with native speakers."
+  description="Practice your conversation skills in an informal setting with native speakers and traditional snacks."
   price="300 EGP"
   onCtaClick={() => router.push("/events/1")}
 />
@@ -97,7 +94,7 @@ export default function HomePage() {
   sections={["header", "title", "description", "divider", "meta", "cta"]}
 />
       </div>
-<HeroSection
+        <HeroSection
           image="/hero.jpg"
           imageAlt="Welcome to Österreich Institut"
           title="Welcome to Österreich Institut"

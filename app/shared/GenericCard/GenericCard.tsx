@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { ArrowRight, CalendarDays, Users } from "lucide-react";
+import { CalendarDays, Users } from "lucide-react";
 import Button from "@/app/shared/Button/Button";
 
 // ─── Shared sub-types ────────────────────────────────────────────────────────
@@ -32,7 +32,7 @@ export interface SectionLayout {
 /** Default pixel sizes per templated variant (Figma). */
 export const CARD_TEMPLATE_SIZES = {
   course: { width: 369, height: 520 },
-  event: { width: 424, height: 552 },
+  event: { width: 488, height: 760 },
   blog: { width: 389, height: 397 },
 } as const;
 
@@ -241,8 +241,8 @@ const DEFAULT_COURSE_FIELDS: CourseFieldsLayout = {
 
 const DEFAULT_EVENT_FIELDS: EventFieldsLayout = {
   image: { align: "start" },
-  dateBadge: { className: "left-4 top-4" },
-  body: { align: "start", className: "gap-3 flex-1" },
+  dateBadge: { className: "left-7 top-7" },
+  body: { align: "stretch", className: "flex-1" },
   footer: { justify: "between", align: "center" },
 };
 
@@ -510,19 +510,19 @@ function EventCard({
   className = "",
 }: Omit<EventCardProps, "variant">) {
   const layout = { ...DEFAULT_EVENT_FIELDS, ...fields };
-  const imageBlock = resolveBlockSize(imageHeight, "h-[200px]");
+  const imageBlock = resolveBlockSize(imageHeight, "h-[287px]");
 
   return (
     <CardShell
       width={width}
       height={height}
       bgClassName={bgClassName}
-      className={className}
+      className={["p-6 text-left sm:p-7", className].filter(Boolean).join(" ")}
     >
       {image && (
         <div
           className={[
-            "relative w-full shrink-0 overflow-hidden",
+            "relative w-full shrink-0 overflow-hidden rounded-[20px]",
             imageBlock.className,
             sectionClasses(layout.image, false),
           ]
@@ -541,17 +541,17 @@ function EventCard({
           {dateBadge && (
             <div
               className={[
-                "absolute flex min-w-[52px] flex-col items-center rounded-lg bg-secondary px-2.5 py-1.5 text-white",
+                "absolute flex h-[105px] w-[72px] flex-col items-center justify-center rounded-[18px] bg-secondary text-white shadow-[0_12px_24px_rgba(17,19,21,0.18)]",
                 sectionClasses(
-                  layout.dateBadge ?? { className: "left-4 top-4" },
+                  layout.dateBadge ?? { className: "left-7 top-7" },
                   false
                 ),
               ].join(" ")}
             >
-              <span className="text-2xl font-extrabold leading-none">
+              <span className="text-[34px] font-extrabold leading-none">
                 {dateBadge.day}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider">
+              <span className="mt-2 text-[18px] font-medium uppercase leading-none">
                 {dateBadge.month}
               </span>
             </div>
@@ -561,14 +561,14 @@ function EventCard({
 
       <div
         className={[
-          "flex min-h-0 flex-1 flex-col p-5",
-          sectionClasses(layout.body) || "gap-3",
+          "flex min-h-0 flex-1 flex-col pt-8",
+          sectionClasses(layout.body, false) || "gap-0",
         ].join(" ")}
       >
         {location && (
           <span
             className={[
-              "text-xs font-bold uppercase tracking-widest text-secondary",
+              "text-[18px] font-bold uppercase leading-none tracking-[0.14em] text-secondary",
               sectionClasses(layout.location, false),
             ]
               .filter(Boolean)
@@ -580,7 +580,7 @@ function EventCard({
 
         <h3
           className={[
-            "text-lg font-bold leading-snug text-text-primary",
+            "mt-6 text-[34px] font-bold leading-tight text-text-primary",
             sectionClasses(layout.title, false),
           ]
             .filter(Boolean)
@@ -592,7 +592,7 @@ function EventCard({
         {description && (
           <p
             className={[
-              "text-sm leading-relaxed text-text-secondary",
+              "mt-6 text-[23px] leading-[1.55] text-text-secondary",
               sectionClasses(layout.description, false),
             ]
               .filter(Boolean)
@@ -602,17 +602,21 @@ function EventCard({
           </p>
         )}
 
-        <hr className="mt-auto border-neutral-100" />
+        <hr className="mt-7 border-[#e7c5c2]" />
 
         <div
-          className={sectionClasses(
-            layout.footer ?? { justify: "between", align: "center" }
-          )}
+          className={[
+            "mt-auto pt-8",
+            sectionClasses(layout.footer ?? { justify: "between", align: "center" }),
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           {price && (
             <span
               className={[
-                priceClassName ?? "text-lg font-extrabold text-secondary",
+                priceClassName ??
+                  "shrink-0 text-[32px] font-extrabold leading-none text-secondary",
                 sectionClasses(layout.price, false),
               ]
                 .filter(Boolean)
@@ -627,13 +631,17 @@ function EventCard({
               onClick={onCtaClick}
               bgColorClass="bg-secondary"
               textColorClass="text-primary"
-              height="h-[44px]"
-              icon={
-                showArrow ? (
-                  <ArrowRight size={16} strokeWidth={2.5} />
-                ) : undefined
-              }
-              iconPosition="right"
+              width={showArrow ? "w-[244px]" : "w-[150px]"}
+              height="h-[74px]"
+              showArrowRight={showArrow}
+              className={[
+                "relative overflow-hidden rounded-full text-[20px] font-bold shadow-none hover:brightness-105 active:translate-y-0.5",
+                showArrow
+                  ? "gap-0 pl-6 pr-[72px] [&>span:last-child]:absolute [&>span:last-child]:right-2 [&>span:last-child]:top-1/2 [&>span:last-child]:flex [&>span:last-child]:h-[58px] [&>span:last-child]:w-[58px] [&>span:last-child]:-translate-y-1/2 [&>span:last-child]:items-center [&>span:last-child]:justify-center [&>span:last-child]:rounded-full [&>span:last-child]:bg-[#db7274] [&>span:last-child]:text-white [&>span:last-child]:transition-transform [&>span:last-child]:duration-300 group-hover/card:[&>span:last-child]:translate-x-1 group-hover/card:[&>span:last-child]:-translate-y-1/2"
+                  : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
             />
           </div>
         </div>
@@ -1071,12 +1079,7 @@ function renderCardSection(
                   bgColorClass={ctx.ctaBgColorClass ?? "bg-secondary"}
                   textColorClass="text-primary"
                   height="h-[44px]"
-                  icon={
-                    ctx.showArrow !== false ? (
-                      <ArrowRight size={16} strokeWidth={2.5} />
-                    ) : undefined
-                  }
-                  iconPosition="right"
+                  showArrowRight={ctx.showArrow !== false}
                 />
               </div>
             )}
