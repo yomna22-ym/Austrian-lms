@@ -1,1 +1,3 @@
-/** CoursesPage components */
+export { default as CourseCardGrid } from "./course-card-grid";
+export { default as CourseDetailContent } from "./course-detail-content";
+export { default as CourseFilters } from "./course-filters";

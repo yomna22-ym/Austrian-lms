@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export interface HeroSectionProps {
   image: string;
@@ -9,6 +10,9 @@ export interface HeroSectionProps {
   ctaLink?: string;
   imageAlt?: string;
   className?: string;
+  minHeightClass?: string;
+  priority?: boolean;
+  showCtaArrow?: boolean;
 }
 
 const CTA_BASE =
@@ -26,6 +30,9 @@ const HeroSection = ({
   ctaLink,
   imageAlt,
   className = "",
+  minHeightClass = "min-h-svh",
+  priority = false,
+  showCtaArrow = false,
 }: HeroSectionProps) => {
   const alt = imageAlt ?? title ?? "";
   const showCta = Boolean(ctaText && ctaLink);
@@ -35,7 +42,8 @@ const HeroSection = ({
     <section
       aria-label={title ?? "Hero"}
       className={[
-        "relative w-full overflow-hidden min-h-svh",
+        "relative w-full overflow-hidden",
+        minHeightClass,
         className,
       ]
         .filter(Boolean)
@@ -47,7 +55,7 @@ const HeroSection = ({
         fill
         className="object-cover object-center"
         sizes="100vw"
-        priority={false}
+        priority={priority}
       />
 
       <div
@@ -60,7 +68,12 @@ const HeroSection = ({
       />
 
       {hasContent && (
-        <div className="relative z-10 flex min-h-svh items-center justify-center md:justify-start">
+        <div
+          className={[
+            "relative z-10 flex items-center justify-center md:justify-start",
+            minHeightClass,
+          ].join(" ")}
+        >
           <div className="mx-auto flex w-full max-w-7xl flex-col items-center px-4 py-10 text-center sm:px-6 sm:py-12 nav:px-8 md:items-start md:py-14 md:text-left lg:px-16">
             {title && (
               <h1 className="max-w-3xl text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl lg:text-[3.25rem]">
@@ -80,6 +93,9 @@ const HeroSection = ({
                 )}
               >
                 {ctaText}
+                {showCtaArrow && (
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                )}
               </Link>
             )}
           </div>

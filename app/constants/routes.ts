@@ -5,6 +5,7 @@ export const WEBSITE_ROUTES = {
   blogs: "/blogs",
   branches: "/branches",
   careers: "/careers",
+  certificates: "/certificates",
   contact: "/contact",
   courses: "/courses",
   events: "/events",

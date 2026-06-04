@@ -1,1 +1,1 @@
-/** utils */
+export * from "./course.constants";

@@ -9,24 +9,19 @@ import { AUTH_ROUTES, WEBSITE_ROUTES } from "@/app/constants/routes";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "About us", href: "/about" },
   { label: "Courses", href: "/courses" },
+  { label: "Culture", href: "/about" },
   { label: "Events", href: "/events" },
-  { label: "Blogs", href: "/blogs" },
-  { label: "Careers", href: "/careers" },
   { label: "Branches", href: "/branches" },
-  { label: "Contact us", href: "/contact" },
+  { label: "Blogs", href: "/blogs" },
+  { label: "Certificate", href: WEBSITE_ROUTES.certificates },
+  { label: "Careers", href: "/careers" },
 ];
 
 const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-
-  // Close menu on route change
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -47,11 +42,26 @@ const Navbar = () => {
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const isFloatingRoute = pathname === "/";
 
   return (
-    <header className="relative z-50 w-full bg-primary shadow-sm">
+    <header
+      className={[
+        "z-50 w-full",
+        isFloatingRoute
+          ? "absolute left-0 top-0 bg-transparent pt-6"
+          : "relative bg-primary shadow-sm",
+      ].join(" ")}
+    >
       {/* Bar — 72px tall at all widths */}
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 nav:px-8 lg:px-16">
+      <div
+        className={[
+          "mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 nav:px-8",
+          isFloatingRoute
+            ? "w-[calc(100%-2rem)] rounded-[18px] bg-primary shadow-[0_10px_28px_rgba(17,19,21,0.12)] lg:w-[calc(100%-10rem)] lg:px-4 xl:px-5"
+            : "lg:px-16",
+        ].join(" ")}
+      >
 
         {/* Logo — nudged slightly left */}
         <Link
@@ -112,7 +122,7 @@ const Navbar = () => {
           <Button
             label="Sign up"
             bgColorClass="bg-input-bg hover:bg-input-border border border-input-border"
-            textColorClass="text-text-primary"
+            textColorClass="text-secondary"
             width="w-[92px]"
             height="h-[51px]"
             className="shadow-[0_1px_0_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm"
