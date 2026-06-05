@@ -1,4 +1,4 @@
-import { PlacementHeader, TakePlacementTest } from "../components";
+import { PlacementHeader, TakePlacementTest } from "../Components";
 
 export default function PlacementTestLandingPage() {
   return (

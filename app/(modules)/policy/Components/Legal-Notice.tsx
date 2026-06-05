@@ -1,3 +1,6 @@
+import PolicyDocument from "./PolicyDocument";
+import { legalNoticeContent } from "./policy-content";
+
 export default function LegalNotice() {
-  return null;
+  return <PolicyDocument content={legalNoticeContent} />;
 }

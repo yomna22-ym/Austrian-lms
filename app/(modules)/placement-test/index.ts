@@ -1,4 +1,4 @@
-export * from "./components";
+export * from "./Components";
 export * from "./hooks";
 export * from "./(pages)";
 export * from "./services";

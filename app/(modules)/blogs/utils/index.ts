@@ -1,1 +1,1 @@
-/** utils */
+export * from "./blog.constants";

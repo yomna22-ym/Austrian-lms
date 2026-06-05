@@ -17,7 +17,6 @@ import {
   Users,
 } from "lucide-react";
 import Breadcrumbs from "@/app/shared/Breadcrumbs";
-import Button from "@/app/shared/Button/Button";
 import InfoPill from "@/app/shared/InfoPill";
 import SurfaceCard from "@/app/shared/SurfaceCard";
 import { COURSE_DETAIL, RELATED_COURSES } from "../utils";
@@ -34,7 +33,7 @@ function SectionTitle({ children }: { children: string }) {
   );
 }
 
-function BookingSidebar() {
+function BookingSidebar({ courseId }: { courseId: string }) {
   return (
     <SurfaceCard className="sticky top-24 p-6 shadow-[0_16px_30px_rgba(17,19,21,0.11)]">
       <div className="flex items-end gap-2">
@@ -71,12 +70,12 @@ function BookingSidebar() {
         })}
       </div>
 
-      <Button
-        label="Book This Course"
-        width="w-full"
-        height="h-[58px]"
-        className="mt-8 rounded-[6px] text-[17px] font-extrabold shadow-[0_7px_14px_rgba(185,19,23,0.25)]"
-      />
+      <Link
+        href={`/courses/${courseId}/checkout`}
+        className="mt-8 inline-flex h-[58px] w-full items-center justify-center rounded-[6px] bg-secondary text-[17px] font-extrabold text-primary shadow-[0_7px_14px_rgba(185,19,23,0.25)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 active:translate-y-0"
+      >
+        Book This Course
+      </Link>
 
       <div className="mt-6 border-t border-[#ece8e8] pt-5">
         <div className="flex items-center gap-2 text-[12px] font-bold text-text-secondary">
@@ -136,7 +135,7 @@ function RelatedCourseCard({
   );
 }
 
-export default function CourseDetailContent() {
+export default function CourseDetailContent({ courseId }: { courseId: string }) {
   return (
     <div className="bg-[linear-gradient(110deg,#ffffff_0%,#ffffff_58%,#fff4f4_100%)]">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-16">
@@ -276,7 +275,7 @@ export default function CourseDetailContent() {
           </main>
 
           <aside className="lg:pt-0">
-            <BookingSidebar />
+            <BookingSidebar courseId={courseId} />
           </aside>
         </div>
 

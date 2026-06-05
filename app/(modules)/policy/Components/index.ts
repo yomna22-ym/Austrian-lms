@@ -1,3 +1,3 @@
-export { default as PrivacyPolicy } from "./privacy-policy";
-export { default as TermsOfService } from "./terms-of-service";
-export { default as LegalNotice } from "./legal-notice";
+export { default as PrivacyPolicy } from "./Privacy-Policy";
+export { default as TermsOfService } from "./Terms-of-Service";
+export { default as LegalNotice } from "./Legal-Notice";

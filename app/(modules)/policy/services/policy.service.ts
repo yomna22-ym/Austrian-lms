@@ -1,7 +1,9 @@
 import type { PolicySlug } from "../types";
 
 export const policyService = {
-  async fetchPolicy(_slug: PolicySlug): Promise<string | null> {
+  async fetchPolicy(slug: PolicySlug): Promise<string | null> {
+    void slug;
+
     return null;
   },
 };

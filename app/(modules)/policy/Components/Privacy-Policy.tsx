@@ -1,3 +1,6 @@
+import PolicyDocument from "./PolicyDocument";
+import { privacyContent } from "./policy-content";
+
 export default function PrivacyPolicy() {
-  return null;
+  return <PolicyDocument content={privacyContent} />;
 }

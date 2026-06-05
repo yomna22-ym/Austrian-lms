@@ -1,5 +1,5 @@
-export { default } from "./LocationFrame";
-export type { LocationFrameProps } from "./LocationFrame";
+export { default } from "./locationFrame";
+export type { LocationFrameProps } from "./locationFrame";
 export type { BranchLocation } from "./types";
 export { default as BranchListCard } from "./BranchListCard";
 export type { BranchListCardProps } from "./BranchListCard";

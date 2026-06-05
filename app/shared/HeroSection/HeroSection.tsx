@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 
 export interface HeroSectionProps {
@@ -13,6 +14,8 @@ export interface HeroSectionProps {
   minHeightClass?: string;
   priority?: boolean;
   showCtaArrow?: boolean;
+  ctaIcon?: ReactNode;
+  overlayClassName?: string;
 }
 
 const CTA_BASE =
@@ -33,6 +36,8 @@ const HeroSection = ({
   minHeightClass = "min-h-svh",
   priority = false,
   showCtaArrow = false,
+  ctaIcon,
+  overlayClassName,
 }: HeroSectionProps) => {
   const alt = imageAlt ?? title ?? "";
   const showCta = Boolean(ctaText && ctaLink);
@@ -59,11 +64,11 @@ const HeroSection = ({
       />
 
       <div
-        className="pointer-events-none absolute inset-0 bg-black/35"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/45 to-black/25 md:bg-gradient-to-r md:from-black/70 md:via-black/40 md:to-transparent"
+        className={[
+          "pointer-events-none absolute inset-0",
+          overlayClassName ??
+            "bg-[linear-gradient(90deg,rgba(17,19,21,0.82)_0%,rgba(91,18,23,0.68)_48%,rgba(17,19,21,0.22)_100%)]",
+        ].join(" ")}
         aria-hidden="true"
       />
 
@@ -93,7 +98,8 @@ const HeroSection = ({
                 )}
               >
                 {ctaText}
-                {showCtaArrow && (
+                {ctaIcon}
+                {!ctaIcon && showCtaArrow && (
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 )}
               </Link>

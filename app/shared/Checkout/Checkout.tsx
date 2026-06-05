@@ -1,13 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Shield, HelpCircle, Lock, ShieldCheck, CircleCheck } from "lucide-react";
+import {
+  Banknote,
+  CreditCard,
+  HelpCircle,
+  Landmark,
+  Lock,
+  LockKeyhole,
+  Shield,
+  ShieldCheck,
+} from "lucide-react";
 import Input from "@/app/shared/Input/Input";
 import Button from "@/app/shared/Button/Button";
-
-/* ── Types ─────────────────────────────────────────────────────────────── */
 
 type PaymentMethod = "card" | "paypal" | "fawry" | "valu" | "vodafone";
 
@@ -24,361 +31,401 @@ export interface CheckoutSummaryLine {
   free?: boolean;
 }
 
-interface CheckoutProps {
-  /** Route to navigate to after payment is "completed" */
-  successRoute: string;
-  item: CheckoutItem;
+export interface CheckoutPaymentPlan {
+  id: string;
+  eyebrow?: string;
+  title: string;
+  description: string;
+  amount: string;
+  bestValue?: boolean;
+  ticketLabel?: string;
   summaryLines: CheckoutSummaryLine[];
   total: string;
 }
 
-/* ── Sub-components ─────────────────────────────────────────────────────── */
-
-const RADIO_BASE =
-  "flex cursor-pointer items-center justify-between rounded-input border px-4 py-3.5 " +
-  "transition-all duration-200 ease-out hover:border-secondary/50 " +
-  "focus-within:ring-2 focus-within:ring-secondary/20";
-
-interface MethodRowProps {
-  id: PaymentMethod;
-  label: string;
-  logo: React.ReactNode;
-  selected: boolean;
-  onSelect: () => void;
+interface CheckoutProps {
+  successRoute: string;
+  item: CheckoutItem;
+  summaryLines: CheckoutSummaryLine[];
+  total: string;
+  paymentPlans?: CheckoutPaymentPlan[];
+  defaultPaymentPlanId?: string;
 }
 
-const MethodRow: React.FC<MethodRowProps> = ({
+const methodRows = [
+  { id: "paypal" as const, label: "PayPal", logo: <PayPalLogo /> },
+  { id: "fawry" as const, label: "Fawry", logo: <FawryLogo /> },
+  { id: "valu" as const, label: "valU", logo: <ValuLogo /> },
+  { id: "vodafone" as const, label: "Vodafone Cash", logo: <VodafoneLogo /> },
+];
+
+function StepBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#a60012] text-[15px] font-bold text-white">
+      {children}
+    </span>
+  );
+}
+
+function PlanCard({
+  plan,
+  selected,
+  onSelect,
+}: {
+  plan: CheckoutPaymentPlan;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={[
+        "relative flex min-h-[206px] flex-col items-start rounded-[10px] border bg-white px-6 py-6 text-left transition-all duration-200",
+        selected
+          ? "border-2 border-secondary shadow-[0_12px_24px_rgba(185,19,23,0.08)]"
+          : "border-[#e8e2e2] hover:border-secondary/50",
+      ].join(" ")}
+    >
+      {plan.bestValue && (
+        <span className="absolute -top-3 left-6 rounded-[4px] bg-[#0b9b63] px-3 py-1 text-[10px] font-bold uppercase text-white">
+          Best Value
+        </span>
+      )}
+      {plan.eyebrow && (
+        <span className="rounded-[4px] bg-[#eeeeee] px-2 py-1 text-[10px] font-extrabold uppercase text-text-secondary">
+          {plan.eyebrow}
+        </span>
+      )}
+      <span className="mt-4 text-[18px] font-bold text-text-primary">
+        {plan.title}
+      </span>
+      <span className="mt-3 text-[13px] leading-6 text-text-secondary">
+        {plan.description}
+      </span>
+      {plan.ticketLabel && (
+        <span className="mt-4 rounded-[4px] bg-[#d9f7eb] px-2 py-1 text-[11px] font-extrabold uppercase text-[#008a5a]">
+          {plan.ticketLabel}
+        </span>
+      )}
+      <span className="mt-auto pt-5 text-[16px] font-extrabold text-[#a60012]">
+        {plan.amount}
+      </span>
+    </button>
+  );
+}
+
+function MethodRow({
   id,
   label,
   logo,
   selected,
   onSelect,
-}) => (
-  <label
-    htmlFor={`pm-${id}`}
-    className={[
-      RADIO_BASE,
-      selected
-        ? "border-secondary bg-secondary/5"
-        : "border-input-border bg-white",
-    ].join(" ")}
-  >
-    <div className="flex items-center gap-3">
-      <input
-        type="radio"
-        id={`pm-${id}`}
-        name="payment-method"
-        value={id}
-        checked={selected}
-        onChange={onSelect}
-        className="accent-secondary h-4 w-4 shrink-0 cursor-pointer"
-      />
-      <span className="text-sm font-medium text-text-primary">{label}</span>
-    </div>
-    <span className="shrink-0">{logo}</span>
-  </label>
-);
+}: {
+  id: PaymentMethod;
+  label: string;
+  logo: React.ReactNode;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <label
+      htmlFor={`pm-${id}`}
+      className={[
+        "flex h-[58px] cursor-pointer items-center justify-between rounded-[8px] border px-4 transition-colors",
+        selected
+          ? "border-secondary bg-white"
+          : "border-[#efb8b8] bg-white hover:border-secondary/70",
+      ].join(" ")}
+    >
+      <span className="flex items-center gap-3">
+        <input
+          id={`pm-${id}`}
+          type="radio"
+          name="payment-method"
+          value={id}
+          checked={selected}
+          onChange={onSelect}
+          className="h-5 w-5 cursor-pointer accent-secondary"
+        />
+        {id === "card" ? (
+          <CreditCard className="h-5 w-5 text-text-secondary" aria-hidden="true" />
+        ) : (
+          <Banknote className="h-5 w-5 text-text-secondary" aria-hidden="true" />
+        )}
+        <span className="text-[16px] font-medium text-text-primary">{label}</span>
+      </span>
+      {logo}
+    </label>
+  );
+}
 
-/* Card logos */
-const CardLogos = () => (
-  <div className="flex items-center gap-1.5">
-    <span className="rounded bg-[#1A1F71] px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-white">
-      VISA
+function PayPalLogo() {
+  return <span className="text-[28px] font-extrabold text-[#12327a]">P</span>;
+}
+
+function FawryLogo() {
+  return (
+    <span className="rounded bg-[#ffe34d] px-2 py-1 text-[12px] font-extrabold text-[#0b67b2]">
+      fawry
     </span>
-    <span className="rounded bg-[#EB001B] px-1.5 py-0.5 text-[10px] font-bold tracking-wide text-white">
-      MC
+  );
+}
+
+function ValuLogo() {
+  return (
+    <span className="text-[20px] font-extrabold text-[#00a99d]">
+      valu<span className="text-secondary">*</span>
     </span>
-  </div>
-);
+  );
+}
 
-const PayPalLogo = () => (
-  <span className="text-sm font-bold">
-    <span className="text-[#003087]">Pay</span>
-    <span className="text-[#009cde]">Pal</span>
-    <span className="text-[#003087]"> P</span>
-  </span>
-);
+function VodafoneLogo() {
+  return (
+    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-[9px] font-bold text-white">
+      cash
+    </span>
+  );
+}
 
-const FawryLogo = () => (
-  <span className="rounded bg-[#F7941D] px-2 py-0.5 text-xs font-bold text-white">
-    fawry
-  </span>
-);
-
-const ValuLogo = () => (
-  <span className="text-sm font-bold text-[#1E1B5E]">
-    valu<span className="text-secondary">*</span>
-  </span>
-);
-
-const VodafoneLogo = () => (
-  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-white">
-    V
-  </span>
-);
-
-/* ── Trust badges ──────────────────────────────────────────────────────── */
-const TrustBadges = () => (
-  <div className="mt-4 flex flex-col items-center gap-1.5">
-    <p className="flex items-center gap-1.5 text-xs text-text-secondary">
-      <Shield className="h-3.5 w-3.5" aria-hidden="true" />
-      Encrypted Secure Payment
-    </p>
-    <p className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">
-      Trusted by
-    </p>
-    <div className="flex items-center gap-4">
-      <Lock className="h-5 w-5 text-text-secondary" aria-hidden="true" />
-      <ShieldCheck className="h-5 w-5 text-secondary" aria-hidden="true" />
-      <CircleCheck className="h-5 w-5 text-[#16a34a]" aria-hidden="true" />
+function TrustBadges() {
+  return (
+    <div className="mt-16 flex flex-col items-center gap-2 text-[#a8adb4]">
+      <p className="flex items-center gap-1.5 text-[12px]">
+        <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+        Encrypted Secure Payment
+      </p>
+      <p className="text-[12px] font-semibold uppercase tracking-[0.08em]">
+        Trusted by
+      </p>
+      <div className="flex items-center gap-4">
+        <ShieldCheck className="h-7 w-7" aria-hidden="true" />
+        <Shield className="h-7 w-7" aria-hidden="true" />
+        <LockKeyhole className="h-7 w-7" aria-hidden="true" />
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
-/* ── Main Checkout component ─────────────────────────────────────────── */
+function SummaryImage({ item }: { item: CheckoutItem }) {
+  return (
+    <div className="relative h-[82px] w-[82px] shrink-0 overflow-hidden bg-[#f2f2f2]">
+      {item.image ? (
+        <Image src={item.image} alt={item.title} fill className="object-cover" />
+      ) : (
+        <div className="flex h-full items-center justify-center text-text-secondary">
+          <Landmark className="h-8 w-8" aria-hidden="true" />
+        </div>
+      )}
+    </div>
+  );
+}
 
-const Checkout: React.FC<CheckoutProps> = ({
+export default function Checkout({
   successRoute,
   item,
   summaryLines,
   total,
-}) => {
+  paymentPlans = [],
+  defaultPaymentPlanId,
+}: CheckoutProps) {
   const router = useRouter();
   const [method, setMethod] = useState<PaymentMethod>("card");
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
+  const [selectedPlanId, setSelectedPlanId] = useState(
+    defaultPaymentPlanId ?? paymentPlans[0]?.id ?? ""
+  );
 
-  const handlePay = () => {
-    // No backend — go straight to success
-    router.push(successRoute);
-  };
+  const selectedPlan = useMemo(
+    () => paymentPlans.find((plan) => plan.id === selectedPlanId),
+    [paymentPlans, selectedPlanId]
+  );
+  const resolvedSummaryLines = selectedPlan?.summaryLines ?? summaryLines;
+  const resolvedTotal = selectedPlan?.total ?? total;
 
   return (
-    <div className="min-h-screen w-full bg-white py-8 sm:py-10 lg:py-14">
-      <div className="mx-auto grid max-w-5xl grid-cols-1 justify-items-center gap-5 px-4 sm:px-6 sm:justify-items-stretch lg:grid-cols-[1fr_320px] lg:gap-6 lg:px-8">
-        {/* Left — payment form (order-2 on mobile so summary shows first) */}
-        <div className="order-2 w-full max-w-lg rounded-2xl bg-white p-5 text-center shadow-sm ring-1 ring-input-border sm:max-w-none sm:p-6 sm:text-left lg:order-1 lg:p-8">
-          <h1 className="text-2xl font-bold text-text-primary">
+    <div className="min-h-screen w-full bg-[#f3f3f3] px-4 py-12 sm:px-6 lg:px-16 lg:py-20">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 lg:grid-cols-[minmax(0,845px)_410px] lg:items-start">
+        <section className="rounded-[22px] bg-white px-5 py-8 sm:px-8 lg:px-8">
+          <h1 className="text-[28px] font-bold leading-tight text-text-primary">
             Secure Checkout
           </h1>
-          <p className="mt-1 text-sm text-text-secondary">
-            Please select your preferred payment method and enter your details
-            below.
+          <p className="mt-3 text-[18px] text-text-secondary">
+            {paymentPlans.length > 0
+              ? "Choose your payment plan and preferred payment method"
+              : "Choose your preferred payment method"}
           </p>
 
-          <div className="mt-6 h-px bg-input-border" />
-
-          {/* Payment method selector */}
-          <div className="mt-6 flex flex-col gap-3">
-            <p className="text-sm font-semibold text-text-primary sm:text-left">
-              Select Payment Method
-            </p>
-
-            {/* Card */}
-            <MethodRow
-              id="card"
-              label="Credit / Debit Card"
-              logo={<CardLogos />}
-              selected={method === "card"}
-              onSelect={() => setMethod("card")}
-            />
-
-            {/* Card fields — visible only when selected */}
-            <div
-              className={[
-                "overflow-hidden transition-all duration-300 ease-out",
-                method === "card"
-                  ? "max-h-[400px] opacity-100"
-                  : "max-h-0 opacity-0",
-              ].join(" ")}
-              aria-hidden={method !== "card"}
-            >
-              <div className="flex flex-col gap-4 rounded-b-xl border border-t-0 border-input-border px-4 pb-5 pt-4">
-                <Input
-                  label="Cardholder Name"
-                  width="w-full"
-                  placeholder="e.g. Maria Müller"
-                  value={cardName}
-                  onChange={setCardName}
-                  autoComplete="cc-name"
-                />
-                <Input
-                  label="Card Number"
-                  width="w-full"
-                  placeholder="0000 0000 0000 0000"
-                  value={cardNumber}
-                  onChange={setCardNumber}
-                  autoComplete="cc-number"
-                  suffix={
-                    <div className="flex items-center gap-1">
-                      <span className="rounded bg-input-bg px-1 text-[9px] font-bold text-text-secondary">
-                        CC
-                      </span>
-                    </div>
-                  }
-                />
-                <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 sm:grid-cols-2">
-                  <Input
-                    label="Expiry Date"
-                    width="w-full"
-                    placeholder="MM/YY"
-                    value={expiry}
-                    onChange={setExpiry}
-                    autoComplete="cc-exp"
+          {paymentPlans.length > 0 && (
+            <div className="mt-7">
+              <div className="flex items-center gap-4">
+                <StepBadge>1</StepBadge>
+                <h2 className="text-[18px] font-bold text-text-primary">
+                  Select Payment Plan
+                </h2>
+              </div>
+              <div className="mt-6 grid gap-4 md:grid-cols-3">
+                {paymentPlans.map((plan) => (
+                  <PlanCard
+                    key={plan.id}
+                    plan={plan}
+                    selected={plan.id === selectedPlanId}
+                    onSelect={() => setSelectedPlanId(plan.id)}
                   />
-                  <Input
-                    label="CVV"
-                    width="w-full"
-                    placeholder="123"
-                    value={cvv}
-                    onChange={setCvv}
-                    autoComplete="cc-csc"
-                    suffix={
-                      <HelpCircle
-                        className="h-4 w-4 text-text-secondary"
-                        aria-label="3-digit security code on the back of your card"
-                      />
-                    }
-                  />
-                </div>
+                ))}
               </div>
             </div>
+          )}
 
-            <MethodRow
-              id="paypal"
-              label="PayPal"
-              logo={<PayPalLogo />}
-              selected={method === "paypal"}
-              onSelect={() => setMethod("paypal")}
-            />
-            <MethodRow
-              id="fawry"
-              label="Fawry"
-              logo={<FawryLogo />}
-              selected={method === "fawry"}
-              onSelect={() => setMethod("fawry")}
-            />
-            <MethodRow
-              id="valu"
-              label="valU"
-              logo={<ValuLogo />}
-              selected={method === "valu"}
-              onSelect={() => setMethod("valu")}
-            />
-            <MethodRow
-              id="vodafone"
-              label="Vodafone Cash"
-              logo={<VodafoneLogo />}
-              selected={method === "vodafone"}
-              onSelect={() => setMethod("vodafone")}
-            />
+          <div className={paymentPlans.length > 0 ? "mt-20" : "mt-7"}>
+            <h2 className="text-[20px] font-medium text-text-primary">
+              Select Payment Method
+            </h2>
+            <div className="mt-5 grid gap-4">
+              <MethodRow
+                id="card"
+                label="Credit / Debit Card"
+                logo={null}
+                selected={method === "card"}
+                onSelect={() => setMethod("card")}
+              />
+
+              {method === "card" && (
+                <div className="grid gap-4">
+                  <Input
+                    label="Cardholder Name"
+                    width="w-full"
+                    height="h-[52px]"
+                    placeholder="e.g. Maria Muller"
+                    value={cardName}
+                    onChange={setCardName}
+                    autoComplete="cc-name"
+                  />
+                  <Input
+                    label="Card Number"
+                    width="w-full"
+                    height="h-[52px]"
+                    placeholder="0000 0000 0000 0000"
+                    value={cardNumber}
+                    onChange={setCardNumber}
+                    autoComplete="cc-number"
+                    suffix={
+                      <span
+                        className="rounded bg-[#e8e8e8] px-1.5 py-0.5 text-[10px] font-bold text-text-secondary"
+                        aria-hidden="true"
+                      >
+                        CC
+                      </span>
+                    }
+                  />
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Input
+                      label="Expiry Date"
+                      width="w-full"
+                      height="h-[52px]"
+                      placeholder="MM/YY"
+                      value={expiry}
+                      onChange={setExpiry}
+                      autoComplete="cc-exp"
+                    />
+                    <Input
+                      label="CVV"
+                      width="w-full"
+                      height="h-[52px]"
+                      placeholder="123"
+                      value={cvv}
+                      onChange={setCvv}
+                      autoComplete="cc-csc"
+                      suffix={
+                        <HelpCircle
+                          className="h-4 w-4 text-text-secondary"
+                          aria-label="3-digit security code on the back of your card"
+                        />
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+
+              {methodRows.map((row) => (
+                <MethodRow
+                  key={row.id}
+                  id={row.id}
+                  label={row.label}
+                  logo={row.logo}
+                  selected={method === row.id}
+                  onSelect={() => setMethod(row.id)}
+                />
+              ))}
+            </div>
           </div>
 
           <Button
-            label={`Complete Payment ${total}`}
+            label={`Complete Payment ${resolvedTotal}`}
             type="button"
             width="w-full"
-            height="h-[54px]"
+            height="h-[60px]"
             bgColorClass="bg-secondary hover:brightness-110 active:brightness-95"
             textColorClass="text-primary"
-            className="mt-8 shadow-sm hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm"
-            icon={<Shield className="h-4 w-4" aria-hidden="true" />}
+            className="mt-10 rounded-[6px] text-[20px] font-bold"
+            icon={<LockKeyhole className="h-5 w-5" aria-hidden="true" />}
             iconPosition="left"
-            onClick={handlePay}
+            onClick={() => router.push(successRoute)}
           />
-        </div>
+        </section>
 
-        {/* Right — order summary (order-1 on mobile so it shows above the form) */}
-        <div className="order-1 flex w-full max-w-lg flex-col gap-4 sm:max-w-none lg:order-2">
-          <div className="mx-auto w-full max-w-md rounded-2xl bg-white p-5 text-center shadow-sm ring-1 ring-input-border sm:mx-0 sm:max-w-none sm:p-6 sm:text-left">
-            <h2 className="text-base font-bold text-text-primary">
-              Payment Summary
-            </h2>
-
-            {/* Item */}
-            <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:items-center">
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-input-bg">
-                {item.image ? (
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-text-secondary">
-                    <BookIcon />
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <p className="text-sm font-semibold text-text-primary">
-                  {item.title}
-                </p>
-                <p className="text-xs text-text-secondary">{item.subtitle}</p>
-              </div>
+        <aside className="rounded-[22px] bg-white px-8 py-9">
+          <h2 className="text-[24px] font-medium text-text-primary">
+            Payment Summary
+          </h2>
+          <div className="mt-9 flex items-center gap-4">
+            <SummaryImage item={item} />
+            <div>
+              <p className="text-[21px] font-medium leading-tight text-text-primary">
+                {item.title}
+              </p>
+              <p className="mt-1 inline-flex rounded-[4px] bg-[#fff0f0] px-2 py-0.5 text-[10px] font-extrabold uppercase text-secondary">
+                {item.subtitle}
+              </p>
             </div>
-
-            <div className="mx-auto mt-5 flex w-full max-w-sm flex-col gap-3 sm:mx-0 sm:max-w-none">
-              {summaryLines.map((row, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <span className="text-sm text-text-secondary">
-                    {row.label}
-                  </span>
-                  <span
-                    className={[
-                      "text-sm font-medium",
-                      row.highlight
-                        ? "text-secondary"
-                        : row.free
-                          ? "font-semibold text-secondary"
-                          : "text-text-primary",
-                    ].join(" ")}
-                  >
-                    {row.value}
-                  </span>
-                </div>
-              ))}
-
-              <div className="h-px bg-input-border" />
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-text-primary">
-                  Total Amount
-                </span>
-                <span className="text-base font-bold text-secondary">
-                  {total}
-                </span>
-              </div>
-            </div>
-
-            <TrustBadges />
           </div>
-        </div>
+
+          <div className="mt-12 grid gap-8">
+            {resolvedSummaryLines.map((row) => (
+              <div key={row.label} className="flex items-center justify-between gap-5">
+                <span className="text-[16px] text-text-secondary">{row.label}</span>
+                <span
+                  className={[
+                    "text-[16px] font-bold",
+                    row.free
+                      ? "text-[#08a34f]"
+                      : row.highlight
+                        ? "text-secondary"
+                        : "text-text-primary",
+                  ].join(" ")}
+                >
+                  {row.value}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-9 h-px bg-[#efd8d8]" />
+          <div className="mt-5 flex items-center justify-between gap-5">
+            <span className="text-[22px] font-bold text-text-primary">
+              Total Amount
+            </span>
+            <span className="text-[26px] font-bold text-secondary">
+              {resolvedTotal}
+            </span>
+          </div>
+
+          <TrustBadges />
+        </aside>
       </div>
     </div>
   );
-};
-
-export default Checkout;
-
-/* Fallback book icon for items without an image */
-const BookIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-6 w-6"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth={1.5}
-    aria-hidden="true"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
-    />
-  </svg>
-);
+}

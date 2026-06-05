@@ -10,7 +10,6 @@ import { AUTH_ROUTES, WEBSITE_ROUTES } from "@/app/constants/routes";
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Courses", href: "/courses" },
-  { label: "Culture", href: "/about" },
   { label: "Events", href: "/events" },
   { label: "Branches", href: "/branches" },
   { label: "Blogs", href: "/blogs" },

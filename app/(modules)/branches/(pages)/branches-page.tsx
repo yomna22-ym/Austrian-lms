@@ -6,7 +6,7 @@ export default function BranchesPage() {
   return (
     <div className="flex w-full flex-col">
       <HeroSection
-        image="/hero.jpg"
+        image="/Ibranchhero.png"
         imageAlt="Österreich Institut branches"
         title={BRANCHES_HERO.title}
         desc={BRANCHES_HERO.description}

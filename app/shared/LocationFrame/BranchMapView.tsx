@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   MapContainer,
   Marker,
@@ -16,6 +16,8 @@ export interface BranchMapViewProps {
   branch: BranchLocation;
   onLocate?: () => void;
   locateLabel?: string;
+  className?: string;
+  popupLabel?: string;
 }
 
 const DEFAULT_ZOOM = 15;
@@ -152,12 +154,24 @@ const BranchMapView = ({
   branch,
   onLocate,
   locateLabel,
+  className = "",
+  popupLabel,
 }: BranchMapViewProps) => {
   const markerIcon = useMemo(() => createBranchMarkerIcon(), []);
   const position: [number, number] = [branch.lat, branch.lng];
+  const containerClassName =
+    className ||
+    "h-[340px] rounded-2xl ring-1 ring-input-border sm:h-[420px] lg:h-[520px]";
 
   return (
-    <div className="relative h-[340px] w-full overflow-hidden rounded-2xl ring-1 ring-input-border sm:h-[420px] lg:h-[520px]">
+    <div
+      className={[
+        "relative w-full overflow-hidden",
+        containerClassName,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <MapContainer
         center={position}
         zoom={DEFAULT_ZOOM}
@@ -176,7 +190,9 @@ const BranchMapView = ({
 
         <Marker position={position} icon={markerIcon}>
           <Popup closeButton={false} offset={[0, -4]}>
-            <span className="font-semibold">{branch.name} Branch</span>
+            <span className="font-semibold">
+              {popupLabel ?? `${branch.name} Branch`}
+            </span>
           </Popup>
         </Marker>
 

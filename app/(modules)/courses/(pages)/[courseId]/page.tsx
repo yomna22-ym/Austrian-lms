@@ -20,5 +20,5 @@ export default async function Page({
     notFound();
   }
 
-  return <CourseDetailPage />;
+  return <CourseDetailPage courseId={courseId} />;
 }
