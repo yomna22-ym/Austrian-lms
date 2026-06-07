@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PageIntro from "@/app/shared/PageIntro";
 import SurfaceCard from "@/app/shared/SurfaceCard";
 import {
   CertificationCard,
@@ -19,6 +20,10 @@ export default function CertificatesPage() {
 
   return (
     <div className="w-full bg-[linear-gradient(180deg,#ffffff_0%,#fff7f7_30%,#ffffff_100%)]">
+      <PageIntro
+        title="Your Gateway to Your Academic Future in Germany"
+        description="We are the official testing hub for TestDaF and TestAS - the internationally recognized exams required for university admission in Germany."
+      />
       <section className="w-full px-4 py-14 sm:px-6 lg:px-16">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 lg:grid-cols-[minmax(0,520px)_minmax(420px,1fr)] lg:items-center lg:gap-20">
           <div>
