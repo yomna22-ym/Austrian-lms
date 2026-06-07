@@ -125,6 +125,7 @@ const TrainingMcqPractice = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
+  const continueAfterRecordingStopRef = useRef(false);
 
   const activeConfig = STEP_CONFIG[step];
   const timedStep = step !== "complete";
@@ -228,6 +229,11 @@ const TrainingMcqPractice = () => {
         setAudioUrl(nextUrl);
         setRecordingState("recorded");
         stream.getTracks().forEach((track) => track.stop());
+
+        if (continueAfterRecordingStopRef.current) {
+          continueAfterRecordingStopRef.current = false;
+          changeStep("writing");
+        }
       };
 
       recorder.start();
@@ -238,7 +244,9 @@ const TrainingMcqPractice = () => {
   };
 
   const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
+    if (mediaRecorderRef.current?.state === "recording") {
+      mediaRecorderRef.current.stop();
+    }
   };
 
   const deleteRecording = () => {
@@ -307,6 +315,12 @@ const TrainingMcqPractice = () => {
     }
 
     if (step === "speaking") {
+      if (recordingState === "recording") {
+        continueAfterRecordingStopRef.current = true;
+        stopRecording();
+        return;
+      }
+
       if (recordingState !== "recorded") {
         setModalType("missing-recording");
         return;
