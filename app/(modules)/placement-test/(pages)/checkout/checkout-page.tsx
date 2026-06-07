@@ -8,7 +8,7 @@ import {
 export default function PlacementTestCheckoutPage() {
   return (
     <Checkout
-      successRoute={PLACEMENT_TEST_ROUTES.readyToStart}
+      successRoute={PLACEMENT_TEST_ROUTES.training}
       item={{
         image: "/AuthHeader.png",
         title: "Placement Test",

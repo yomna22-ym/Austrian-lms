@@ -8,7 +8,6 @@ export function usePlacementNavigation() {
 
   return {
     goToCheckout: () => router.push(PLACEMENT_TEST_ROUTES.checkout),
-    goToReadyToStart: () => router.push(PLACEMENT_TEST_ROUTES.readyToStart),
     goToTraining: () => router.push(PLACEMENT_TEST_ROUTES.training),
     goToTrainingMcqPractice: () =>
       router.push(PLACEMENT_TEST_ROUTES.trainingMcqPractice),
