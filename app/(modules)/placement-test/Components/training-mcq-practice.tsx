@@ -340,6 +340,25 @@ const TrainingMcqPractice = () => {
     }
   };
 
+  const handleWarningOk = () => {
+    const currentModal = modalType;
+    setModalType(null);
+
+    if (currentModal === "missing-answer") {
+      changeStep("speaking");
+      return;
+    }
+
+    if (currentModal === "missing-recording") {
+      changeStep("writing");
+      return;
+    }
+
+    if (currentModal === "missing-writing") {
+      changeStep("complete");
+    }
+  };
+
   const renderTimer = () => (
     <section className="rounded-[10px] border border-input-border bg-white px-6 py-4 text-center shadow-[0_1px_3px_rgba(17,19,21,0.03)]">
       <div className="mx-auto mb-3 grid h-[68px] w-[68px] place-items-center">
@@ -817,9 +836,8 @@ const TrainingMcqPractice = () => {
                   : "Please write your answer first."}
             </h2>
             <p className="mx-auto mt-5 max-w-[330px] text-sm font-medium leading-relaxed text-text-primary">
-                  {modalType === "missing-answer"
-                    ? "Once you click Next, you will not be able to go back to this question."
-                : "Once you click Next, you will not be able to go back to this question."}
+              Once you click Next, you will not be able to go back to this
+              question.
             </p>
             <div className="mt-8 flex justify-center">
               <Button
@@ -830,7 +848,7 @@ const TrainingMcqPractice = () => {
                 bgColorClass="bg-secondary hover:brightness-110"
                 textColorClass="text-primary"
                 className="rounded-[8px] text-sm font-bold"
-                onClick={() => setModalType(null)}
+                onClick={handleWarningOk}
               />
             </div>
           </div>
