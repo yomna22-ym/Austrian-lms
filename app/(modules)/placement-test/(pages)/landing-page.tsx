@@ -1,9 +1,8 @@
-import { PlacementHeader, TakePlacementTest } from "../Components";
+import { TakePlacementTest } from "../Components";
 
 export default function PlacementTestLandingPage() {
   return (
     <div className="w-full">
-      <PlacementHeader />
       <TakePlacementTest />
     </div>
   );

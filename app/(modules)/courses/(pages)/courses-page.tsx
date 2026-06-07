@@ -1,17 +1,8 @@
-import HeroSection from "@/app/shared/HeroSection/HeroSection";
 import { CourseCardGrid, CourseFilters } from "../components";
 
 export default function CoursesPage() {
   return (
     <div className="w-full bg-white">
-      <HeroSection
-        image="/Iherocource.png"
-        imageAlt="Austrian palace reflected in water"
-        title="German Courses"
-        desc="Tailored for every level - from A1 to C2."
-        priority
-      />
-
       <section className="w-full px-4 py-12 sm:px-6 nav:py-16 lg:px-16">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col gap-4 nav:ml-[292px] nav:flex-row nav:items-center nav:justify-between">
