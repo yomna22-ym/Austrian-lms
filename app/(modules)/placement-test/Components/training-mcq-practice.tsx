@@ -41,6 +41,24 @@ const OPTIONS = [
   { id: "D", label: "Graz" },
 ];
 
+const AUDIO_MIME_TYPES = [
+  "audio/mp4;codecs=mp4a.40.2",
+  "audio/mp4",
+  "audio/aac",
+  "audio/webm;codecs=opus",
+  "audio/webm",
+];
+
+const getSupportedAudioMimeType = () => {
+  if (typeof MediaRecorder === "undefined") return "";
+
+  return (
+    AUDIO_MIME_TYPES.find((mimeType) =>
+      MediaRecorder.isTypeSupported(mimeType),
+    ) ?? ""
+  );
+};
+
 const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
@@ -185,7 +203,11 @@ const TrainingMcqPractice = () => {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      const mimeType = getSupportedAudioMimeType();
+      const recorder = new MediaRecorder(
+        stream,
+        mimeType ? { mimeType } : undefined,
+      );
 
       streamRef.current = stream;
       mediaRecorderRef.current = recorder;
@@ -197,7 +219,9 @@ const TrainingMcqPractice = () => {
       };
 
       recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        const blob = new Blob(chunksRef.current, {
+          type: recorder.mimeType || mimeType || "audio/mp4",
+        });
         const nextUrl = URL.createObjectURL(blob);
 
         if (audioUrl) URL.revokeObjectURL(audioUrl);
@@ -236,8 +260,14 @@ const TrainingMcqPractice = () => {
     }
 
     audioRef.current.currentTime = 0;
-    audioRef.current.play();
-    setIsPlayingAudio(true);
+    audioRef.current.load();
+    audioRef.current
+      .play()
+      .then(() => setIsPlayingAudio(true))
+      .catch(() => {
+        setIsPlayingAudio(false);
+        setMicError("Your browser could not play this recording. Please record again.");
+      });
   };
 
   const toggleWritingStyle = (key: keyof typeof writingStyle) => {
