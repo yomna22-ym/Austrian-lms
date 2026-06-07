@@ -12,8 +12,11 @@ interface MainProps {
 const Main = ({ children }: MainProps) => {
   const pathname = usePathname();
   const isAuthRoute = pathname?.startsWith("/auth");
+  const isPlacementPracticeRoute = pathname?.startsWith(
+    "/placement-test/training/mcq-practice",
+  );
 
-  if (isAuthRoute) {
+  if (isAuthRoute || isPlacementPracticeRoute) {
     return <>{children}</>;
   }
 

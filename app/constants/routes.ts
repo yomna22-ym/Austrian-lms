@@ -31,4 +31,6 @@ export const PLACEMENT_TEST_ROUTES = {
   landing: "/placement-test",
   checkout: "/placement-test/checkout",
   readyToStart: "/placement-test/ready-to-start",
+  training: "/placement-test/training",
+  trainingMcqPractice: "/placement-test/training/mcq-practice",
 } as const;

@@ -32,30 +32,36 @@ export const EGYPT_BRANCHES: readonly BranchLocation[] = [
   {
     id: "maadi",
     name: "Maadi",
+    address: "3 Oraby Street, Maadi, Cairo Governorate 4212030, Egypt",
     lat: 29.9602,
     lng: 31.2569,
   },
   {
     id: "garden-city",
     name: "Garden City",
+    address: "7 Al Bergas, Garden City, Cairo, Egypt 11865",
     lat: 30.0426,
     lng: 31.2243,
   },
   {
     id: "5th-settlement",
     name: "5th Settlement",
+    address: "5th Settlement, New Cairo 1, Cairo Governorate, Egypt",
     lat: 30.0131,
     lng: 31.4289,
   },
   {
     id: "alexandria",
     name: "Alexandria",
+    address:
+      "Cleopatra Plaza, Ali Mustafa Mishrifah St, Azarita, Alexandria, Egypt",
     lat: 31.2001,
     lng: 29.9187,
   },
   {
     id: "mall-of-arabia",
     name: "Mall of Arabia",
+    address: "Greek Campus, Mall of Arabia, 6 October City, Egypt",
     lat: 30.0131,
     lng: 30.9746,
   },

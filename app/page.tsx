@@ -411,7 +411,7 @@ function CourseCatalogSection() {
   const router = useRouter();
 
   return (
-    <section className="w-full overflow-hidden bg-[#f5f5f5] px-4 py-20 sm:px-6 lg:px-16 lg:pb-[54px] lg:pt-[86px]">
+    <section className="w-full overflow-x-hidden bg-[#f5f5f5] px-4 py-20 sm:px-6 lg:overflow-hidden lg:px-16 lg:pb-[54px] lg:pt-[86px]">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 flex items-end justify-between gap-6">
           <div>
@@ -430,7 +430,7 @@ function CourseCatalogSection() {
           </Link>
         </div>
 
-        <div className="-mr-32 flex gap-10 overflow-visible pb-2">
+        <div className="-mx-4 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 lg:-mr-32 lg:mx-0 lg:gap-10 lg:overflow-visible lg:px-0 lg:pb-2">
           {homeCourses.map((course) => (
             <GenericCard
               key={`${course.id}-${course.title}`}
@@ -453,7 +453,7 @@ function CourseCatalogSection() {
               ]}
               ctaLabel="Book Course"
               onCtaClick={() => router.push(`/courses/${course.id}`)}
-              className="rounded-[14px] border-0 shadow-[0_10px_26px_rgba(17,19,21,0.04)]"
+              className="snap-start rounded-[14px] border-0 shadow-[0_10px_26px_rgba(17,19,21,0.04)]"
               fields={{
                 header: { justify: "between", align: "center", className: "gap-4" },
               }}
@@ -476,7 +476,7 @@ function PopularEventsSection() {
   const router = useRouter();
 
   return (
-    <section className="w-full overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#fff3f3_100%)] px-4 py-20 sm:px-6 lg:px-16 lg:pb-[86px] lg:pt-[78px]">
+    <section className="w-full overflow-x-hidden bg-[linear-gradient(180deg,#ffffff_0%,#fff3f3_100%)] px-4 py-20 sm:px-6 lg:overflow-hidden lg:px-16 lg:pb-[86px] lg:pt-[78px]">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-center">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-secondary">
@@ -490,7 +490,7 @@ function PopularEventsSection() {
           </p>
         </div>
 
-        <div className="-mr-40 flex gap-10 overflow-visible pb-2">
+        <div className="-mx-4 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 lg:-mr-40 lg:mx-0 lg:gap-10 lg:overflow-visible lg:px-0 lg:pb-2">
           {homeEvents.map((event) => (
             <GenericCard
               key={event.id}
@@ -506,7 +506,7 @@ function PopularEventsSection() {
               price={`${event.price} EGP`}
               ctaLabel="Book Event"
               onCtaClick={() => router.push(`/events/${event.id}`)}
-              className="rounded-[8px] border-0 shadow-[0_10px_26px_rgba(17,19,21,0.06)]"
+              className="snap-start rounded-[8px] border-0 shadow-[0_10px_26px_rgba(17,19,21,0.06)]"
               imageHeight={190}
             />
           ))}
