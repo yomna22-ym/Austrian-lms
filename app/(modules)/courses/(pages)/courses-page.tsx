@@ -10,7 +10,7 @@ export default function CoursesPage() {
       />
       <section className="w-full px-4 py-12 sm:px-6 nav:py-16 lg:px-16">
         <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col gap-4 nav:ml-[292px] nav:flex-row nav:items-center nav:justify-between">
+          <div className="flex flex-col gap-4 nav:ml-[340px] nav:flex-row nav:items-center nav:justify-between">
             <p className="text-[15px] font-bold text-text-secondary">
               Showing <span className="text-text-primary">24</span> of 86 courses
             </p>
@@ -19,7 +19,7 @@ export default function CoursesPage() {
             </span>
           </div>
 
-          <div className="mt-10 grid grid-cols-1 gap-8 nav:grid-cols-[248px_minmax(0,1fr)] nav:gap-9">
+          <div className="mt-10 grid grid-cols-1 gap-8 nav:grid-cols-[300px_minmax(0,1fr)] nav:gap-9">
             <CourseFilters />
 
             <div className="min-w-0">

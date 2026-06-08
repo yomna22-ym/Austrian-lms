@@ -26,6 +26,7 @@ export const COURSES = Array.from({ length: 9 }, (_, index) => ({
     "Start your journey with basic phrases and essential grammar for daily life in Austria.",
   duration: "8 Weeks | Start: Oct 15",
   sessions: "24 Sessions (90 min each)",
+  days: "Mon & Wed",
 }));
 
 export const COURSE_DETAIL = {

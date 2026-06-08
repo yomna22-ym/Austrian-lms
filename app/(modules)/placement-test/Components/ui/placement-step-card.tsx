@@ -86,26 +86,26 @@ const PracticeStepCard: React.FC<PracticeStepCardProps> = ({
   <article
     className={[
       CARD_SHELL,
-      "h-full min-h-[340px] rounded-[10px] px-5 pb-4 pt-5 text-center shadow-[0_1px_3px_rgba(17,19,21,0.04)]",
+      "h-full min-h-[382px] rounded-[10px] px-5 pb-5 pt-6 text-center shadow-[0_8px_22px_rgba(17,19,21,0.06)]",
       className,
     ].join(" ")}
   >
     <CardHoverAccent />
 
     <div className="flex flex-1 flex-col items-center">
-      <div className="relative mb-4 flex h-[56px] w-[56px] items-center justify-center rounded-full bg-secondary/10 text-secondary ring-1 ring-secondary/10 transition-all duration-300 group-hover:bg-secondary/15 group-hover:ring-secondary/25">
+      <div className="relative mb-4 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-secondary/10 text-secondary ring-1 ring-secondary/10 transition-all duration-300 group-hover:bg-secondary/15 group-hover:ring-secondary/25">
         <span className="absolute inset-0 rounded-full bg-secondary opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-25" />
         <span className="relative z-10">{icon}</span>
       </div>
 
-      <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-secondary">
+      <p className="mb-3 text-[14px] font-bold uppercase leading-none text-[#df0012]">
         Step {step}
       </p>
-      <h2 className="mb-2 text-[17px] font-bold leading-tight text-text-primary">
+      <h2 className="mb-3 text-[21px] font-bold leading-tight text-black">
         {title}
       </h2>
-      <span className="mb-4 h-px w-8 bg-secondary/70 transition-colors duration-300 group-hover:bg-secondary" aria-hidden="true" />
-      <p className="mb-3 max-w-[230px] text-[11px] font-medium leading-[1.55] text-text-secondary">
+      <span className="mb-5 h-[2px] w-9 bg-[#df0012] transition-colors duration-300 group-hover:bg-secondary" aria-hidden="true" />
+      <p className="mb-4 max-w-[230px] text-[14px] font-normal leading-[1.45] text-black">
         {description}
       </p>
 
@@ -113,7 +113,7 @@ const PracticeStepCard: React.FC<PracticeStepCardProps> = ({
     </div>
 
     {footer ? (
-      <div className="mt-auto flex min-h-[40px] items-center justify-center rounded-[6px] bg-input-bg px-3 text-[10px] font-medium text-text-primary">
+      <div className="mt-auto flex min-h-[52px] items-center justify-center rounded-[6px] bg-[#ededed] px-4 text-[12px] font-medium text-black">
         {footer}
       </div>
     ) : null}
