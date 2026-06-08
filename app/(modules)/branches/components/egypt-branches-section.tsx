@@ -9,9 +9,15 @@ import { useReveal } from "../hooks";
 
 interface EgyptBranchesSectionProps {
   branches: readonly BranchLocation[];
+  selectedBranchId?: string;
+  onBranchSelect?: (branchId: string) => void;
 }
 
-const EgyptBranchesSection = ({ branches }: EgyptBranchesSectionProps) => {
+const EgyptBranchesSection = ({
+  branches,
+  selectedBranchId,
+  onBranchSelect,
+}: EgyptBranchesSectionProps) => {
   const { ref, isVisible } = useReveal();
 
   return (
@@ -34,7 +40,12 @@ const EgyptBranchesSection = ({ branches }: EgyptBranchesSectionProps) => {
           className={isVisible ? "animate-branch-fade-up" : "opacity-0"}
           style={{ animationDelay: "0.22s" }}
         >
-          <LocationFrame branches={branches} defaultBranchId="heliopolis" />
+          <LocationFrame
+            branches={branches}
+            defaultBranchId="heliopolis"
+            selectedBranchId={selectedBranchId}
+            onBranchSelect={onBranchSelect}
+          />
         </div>
       </div>
     </section>

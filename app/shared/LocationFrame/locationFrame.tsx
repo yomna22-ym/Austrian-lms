@@ -18,16 +18,28 @@ const BranchMapView = dynamic(() => import("./BranchMapView"), {
 export interface LocationFrameProps {
   branches: readonly BranchLocation[];
   defaultBranchId?: string;
+  selectedBranchId?: string;
+  onBranchSelect?: (branchId: string) => void;
   className?: string;
 }
 
 const LocationFrame = ({
   branches,
   defaultBranchId,
+  selectedBranchId: controlledSelectedBranchId,
+  onBranchSelect,
   className = "",
 }: LocationFrameProps) => {
   const initialBranchId = defaultBranchId ?? branches[0]?.id ?? "";
-  const [selectedBranchId, setSelectedBranchId] = useState(initialBranchId);
+  const [uncontrolledSelectedBranchId, setUncontrolledSelectedBranchId] =
+    useState(initialBranchId);
+  const selectedBranchId = controlledSelectedBranchId ?? uncontrolledSelectedBranchId;
+  const setSelectedBranchId = (branchId: string) => {
+    if (controlledSelectedBranchId === undefined) {
+      setUncontrolledSelectedBranchId(branchId);
+    }
+    onBranchSelect?.(branchId);
+  };
 
   const selectedBranch = useMemo(
     () => branches.find((branch) => branch.id === selectedBranchId) ?? branches[0],

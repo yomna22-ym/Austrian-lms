@@ -6,10 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Users,
 } from "lucide-react";
 import GenericCard from "@/app/shared/GenericCard";
 import Dropdown from "@/app/shared/Dropdown";
@@ -64,43 +62,31 @@ const whyAustrianItems = [
 const homeCourses = [
   {
     id: 1,
-    badge: "A1.1 Beginner",
-    price: "800 EGP",
-    title: "German Foundation",
-    description:
-      "Start your journey with basic phrases and essential grammar for daily life in Austria.",
-    duration: "8 Weeks | Start: Oct 15",
-    sessions: "24 Sessions (90 min each)",
+    eyebrow: "Start from",
+    price: "1800 EGP",
+    title: "Standard German Course",
+    tags: ["Class Rooms"],
   },
   {
     id: 2,
-    badge: "B2.1 Intermediate",
-    price: "800 EGP",
-    title: "Professional German",
-    description:
-      "Refine your skills for workplace communication and complex social interactions.",
-    duration: "8 Weeks | Start: Oct 12",
-    sessions: "24 Sessions (90 min each)",
+    eyebrow: "Start from",
+    price: "2500 EGP",
+    title: "professional German Course",
+    tags: ["Class Rooms", "Class Rooms", "Class Rooms"],
   },
   {
     id: 3,
-    badge: "C1.2 Advanced",
-    price: "800 EGP",
-    title: "Academic Excellence",
-    description:
-      "Achieve near-native fluency for university studies and high-level negotiations.",
-    duration: "8 Weeks | Start: Oct 20",
-    sessions: "24 Sessions (90 min each)",
+    eyebrow: "Start from",
+    price: "1800 EGP",
+    title: "Diploma",
+    tags: ["Class Rooms"],
   },
   {
     id: 4,
-    badge: "C1.2 Advanced",
-    price: "800 EGP",
-    title: "Academic Excellence",
-    description:
-      "Achieve near-native fluency for university studies and high-level negotiations.",
-    duration: "8 Weeks | Start: Oct 20",
-    sessions: "24 Sessions (90 min each)",
+    eyebrow: "Start from",
+    price: "2500 EGP",
+    title: "conversation",
+    tags: ["Class Rooms"],
   },
 ];
 
@@ -411,14 +397,14 @@ function CourseCatalogSection() {
   const router = useRouter();
 
   return (
-    <section className="w-full overflow-x-hidden bg-[#f5f5f5] px-4 py-20 sm:px-6 lg:overflow-hidden lg:px-16 lg:pb-[54px] lg:pt-[86px]">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-12 flex items-end justify-between gap-6">
+    <section className="w-full overflow-x-hidden bg-[#f4f4f4] px-4 py-16 sm:px-6 lg:overflow-hidden lg:px-16 lg:pb-[88px] lg:pt-[70px]">
+      <div className="mx-auto max-w-[1430px]">
+        <div className="mb-9 flex items-end justify-between gap-6">
           <div>
-            <h2 className="text-[28px] font-bold leading-tight text-text-primary">
+            <h2 className="text-[26px] font-bold leading-tight text-text-primary">
               Course Catalog
             </h2>
-            <p className="mt-4 text-[13px] text-text-secondary">
+            <p className="mt-4 text-[12px] text-text-secondary">
               Tailored paths for every linguistic ambition.
             </p>
           </div>
@@ -430,34 +416,54 @@ function CourseCatalogSection() {
           </Link>
         </div>
 
-        <div className="-mx-4 flex snap-x snap-mandatory gap-5 overflow-x-auto px-4 pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 lg:-mr-32 lg:mx-0 lg:gap-10 lg:overflow-visible lg:px-0 lg:pb-2">
+        <div className="grid grid-cols-1 gap-6 pb-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 lg:pb-2">
           {homeCourses.map((course) => (
-            <GenericCard
+            <article
               key={`${course.id}-${course.title}`}
-              variant="course"
-              width={300}
-              height={420}
-              badge={course.badge}
-              price={course.price}
-              title={course.title}
-              description={course.description}
-              meta={[
-                {
-                  icon: <CalendarDays size={14} className="text-secondary" />,
-                  text: course.duration,
-                },
-                {
-                  icon: <Users size={14} className="text-secondary" />,
-                  text: course.sessions,
-                },
-              ]}
-              ctaLabel="Book Course"
-              onCtaClick={() => router.push(`/courses/${course.id}`)}
-              className="snap-start rounded-[14px] border-0 shadow-[0_10px_26px_rgba(17,19,21,0.04)]"
-              fields={{
-                header: { justify: "between", align: "center", className: "gap-4" },
-              }}
-            />
+              className="w-full rounded-[13px] bg-white p-[17px] shadow-[0_10px_24px_rgba(17,19,21,0.04)]"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <span className="text-[11px] font-medium text-[#8b8b8b]">
+                  {course.eyebrow}
+                </span>
+                <strong className="text-[17px] font-extrabold text-[#c90f18]">
+                  {course.price}
+                </strong>
+              </div>
+
+              <h3 className="mt-5 min-h-[22px] text-[16px] font-bold leading-tight text-[#242424]">
+                {course.title}
+              </h3>
+
+              <div className="relative mt-3 h-[160px] overflow-hidden rounded-[4px] bg-[#e9e9e9]">
+                <Image
+                  src="/Downloads/coursecatalog.jpg"
+                  alt={`${course.title} classroom`}
+                  fill
+                  className="object-cover object-[50%_66%]"
+                  sizes="294px"
+                />
+              </div>
+
+              <div className="mt-4 flex min-h-[19px] flex-wrap items-center gap-2">
+                {course.tags.map((tag, index) => (
+                  <span
+                    key={`${course.id}-${tag}-${index}`}
+                    className="rounded-full bg-[#fff0f0] px-2 py-1 text-[8px] font-bold text-[#c90f18]"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => router.push(`/courses/${course.id}`)}
+                className="mt-3 flex h-[38px] w-full items-center justify-center rounded-[7px] bg-[#c90f18] text-[11px] font-bold text-white transition-colors hover:bg-[#b91317]"
+              >
+                View Details
+              </button>
+            </article>
           ))}
         </div>
 

@@ -5,10 +5,10 @@ import {
   BarChart3,
   CalendarDays,
   ChevronDown,
+  Globe2,
   Trash2,
-  X,
 } from "lucide-react";
-import { COURSE_MONTHS } from "../utils";
+import { COURSE_FORMATS, COURSE_MONTHS } from "../utils";
 
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 const schedules = ["Morning (9:00 - 12:00)", "Evening (18:00 - 21:00)"] as const;
@@ -113,13 +113,13 @@ const LevelSelectBox = ({
 );
 
 export default function CourseFilters() {
-  const [open, setOpen] = useState(true);
   const [selectedDays, setSelectedDays] = useState<string[]>(["Mon", "Tue", "Wed"]);
   const [category, setCategory] = useState("Standard");
   const [branch, setBranch] = useState("Maadi");
   const [level, setLevel] = useState("All level");
   const [selectedSchedules, setSelectedSchedules] = useState<string[]>([]);
   const [month, setMonth] = useState("Feb");
+  const [format, setFormat] = useState("All");
 
   const resetFilters = () => {
     setSelectedDays(["Mon", "Tue", "Wed"]);
@@ -128,33 +128,11 @@ export default function CourseFilters() {
     setLevel("All level");
     setSelectedSchedules([]);
     setMonth("Feb");
+    setFormat("All");
   };
 
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="flex h-12 w-full items-center justify-center rounded-[12px] bg-[#c90f18] text-[15px] font-bold text-white nav:w-[300px] nav:shrink-0"
-      >
-        Open Filters
-      </button>
-    );
-  }
-
   return (
-    <aside className="w-full overflow-hidden rounded-[18px] border border-[#eeeeee] bg-white shadow-[0_12px_32px_rgba(17,19,21,0.08)] nav:w-[300px] nav:shrink-0">
-      <div className="flex h-[64px] items-center justify-end border-b border-[#ececec] px-5">
-        <button
-          type="button"
-          aria-label="Close filters"
-          onClick={() => setOpen(false)}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f0f0f0] text-[#1f1f1f] transition-colors hover:bg-[#e5e5e5]"
-        >
-          <X className="h-5 w-5" strokeWidth={2.1} aria-hidden="true" />
-        </button>
-      </div>
-
+    <aside className="w-full bg-white nav:w-[300px] nav:shrink-0">
       <div className="px-5 py-6">
         <div className="flex items-center justify-between gap-3">
           <h2 className="text-[20px] font-bold text-[#242424]">Filters</h2>
@@ -272,24 +250,32 @@ export default function CourseFilters() {
               ))}
             </div>
           </section>
-        </div>
-      </div>
 
-      <div className="sticky bottom-0 border-t border-[#ececec] bg-white/95 px-5 pb-5 pt-5 backdrop-blur">
-        <button
-          type="button"
-          onClick={() => setOpen(false)}
-          className="flex h-12 w-full items-center justify-center rounded-[10px] bg-[#a90012] text-[16px] font-bold text-white shadow-[0_10px_18px_rgba(169,0,18,0.18)] transition-colors hover:bg-[#c90f18]"
-        >
-          Show 24 Courses
-        </button>
-        <button
-          type="button"
-          onClick={resetFilters}
-          className="mt-4 flex w-full items-center justify-center text-[14px] font-bold text-[#6d6d6d] transition-colors hover:text-[#242424]"
-        >
-          Reset All
-        </button>
+          <section>
+            <div className="flex items-center gap-2 text-[13px] font-bold text-[#242424]">
+              <Globe2 className="h-4 w-4" strokeWidth={2.2} aria-hidden="true" />
+              <span>Format</span>
+            </div>
+            <div className="mt-4 grid grid-cols-3 rounded-[8px] bg-[#f1f1f3] p-1">
+              {COURSE_FORMATS.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  aria-pressed={format === item}
+                  onClick={() => setFormat(item)}
+                  className={[
+                    "h-8 rounded-[6px] text-[11px] font-bold transition-colors",
+                    format === item
+                      ? "bg-[#c90f18] text-white"
+                      : "text-[#242424] hover:bg-white",
+                  ].join(" ")}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
     </aside>
   );
