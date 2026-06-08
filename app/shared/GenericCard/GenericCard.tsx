@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { CalendarDays, Users } from "lucide-react";
+import { ArrowRight, CalendarDays, Users } from "lucide-react";
 import Button from "@/app/shared/Button/Button";
 
 // ─── Shared sub-types ────────────────────────────────────────────────────────
@@ -531,7 +531,24 @@ function EventCard({
       width={width}
       height={height}
       bgClassName={bgClassName}
-      className={["p-4 text-left", className].filter(Boolean).join(" ")}
+      className={[
+        "p-4 text-left",
+        onCtaClick ? "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2" : "",
+        className,
+      ].filter(Boolean).join(" ")}
+      onClick={onCtaClick}
+      role={onCtaClick ? "button" : undefined}
+      tabIndex={onCtaClick ? 0 : undefined}
+      onKeyDown={
+        onCtaClick
+          ? (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onCtaClick();
+              }
+            }
+          : undefined
+      }
     >
       {image && (
         <div
@@ -640,23 +657,31 @@ function EventCard({
             </span>
           )}
           <div className={sectionClasses(layout.cta, false)}>
-            <Button
-              label={ctaLabel}
-              onClick={onCtaClick}
-              bgColorClass="bg-secondary"
-              textColorClass="text-primary"
-              width={showArrow ? "w-[150px] max-[340px]:w-full" : "w-[120px] max-[340px]:w-full"}
-              height="h-[50px]"
-              showArrowRight={showArrow}
-              className={[
-                "relative overflow-hidden rounded-full text-[14px] font-bold shadow-none hover:brightness-105 active:translate-y-0.5",
-                showArrow
-                  ? "gap-0 pl-4 pr-[48px] [&>span:last-child]:absolute [&>span:last-child]:right-1.5 [&>span:last-child]:top-1/2 [&>span:last-child]:flex [&>span:last-child]:h-[38px] [&>span:last-child]:w-[38px] [&>span:last-child]:-translate-y-1/2 [&>span:last-child]:items-center [&>span:last-child]:justify-center [&>span:last-child]:rounded-full [&>span:last-child]:bg-[#db7274] [&>span:last-child]:text-white [&>span:last-child]:transition-transform [&>span:last-child]:duration-300 group-hover/card:[&>span:last-child]:translate-x-0.5 group-hover/card:[&>span:last-child]:-translate-y-1/2"
-                  : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-            />
+            {showArrow ? (
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onCtaClick?.();
+                }}
+                className="relative flex h-[58px] w-[186px] max-w-full items-center overflow-hidden rounded-full bg-secondary pl-6 pr-[72px] text-left text-[16px] font-bold text-white transition-all duration-200 hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 active:translate-y-0.5 max-[340px]:w-full"
+              >
+                <span className="whitespace-nowrap leading-none">{ctaLabel}</span>
+                <span className="absolute right-0 top-0 flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#de696d] text-white">
+                  <ArrowRight className="h-5 w-5" strokeWidth={2.4} aria-hidden="true" />
+                </span>
+              </button>
+            ) : (
+              <Button
+                label={ctaLabel}
+                onClick={onCtaClick}
+                bgColorClass="bg-secondary"
+                textColorClass="text-primary"
+                width="w-[120px] max-[340px]:w-full"
+                height="h-[50px]"
+                className="relative overflow-hidden rounded-full text-[16px] font-bold shadow-none hover:brightness-105 active:translate-y-0.5"
+              />
+            )}
           </div>
         </div>
       </div>

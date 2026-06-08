@@ -355,16 +355,16 @@ function WhyAustrianSection() {
 function ConnectedLearningSection() {
   return (
     <section className="w-full bg-white px-4 pb-24 sm:px-6 lg:px-16 lg:pb-[115px]">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:items-center lg:gap-20">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 lg:grid-cols-[minmax(0,520px)_minmax(0,1fr)] lg:items-center lg:gap-20">
         <div className="lg:pt-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-secondary">
+          <p className="text-[13px] font-bold uppercase tracking-[0.14em] text-secondary">
             A connected learning experience
           </p>
-          <h2 className="mt-4 max-w-[390px] text-[22px] font-bold leading-[1.25] text-text-primary sm:text-[24px]">
+          <h2 className="mt-5 max-w-[520px] text-[34px] font-bold leading-[1.35] text-[#111827] sm:text-[36px]">
             Progress You Can See.
             <span className="block">Motivation You Can Feel.</span>
           </h2>
-          <p className="mt-5 max-w-[470px] text-[12px] leading-relaxed text-text-secondary">
+          <p className="mt-5 max-w-[570px] text-[16px] leading-relaxed text-text-secondary">
             Your learning path isn&apos;t linear. It adapts dynamically to your
             goals, your pace, and your performance. A gamified smart dashboard
             tracks your real-time progress so you always know exactly where you
@@ -372,7 +372,7 @@ function ConnectedLearningSection() {
           </p>
           <Link
             href="/courses"
-            className="mt-6 inline-flex h-[39px] min-w-[140px] items-center justify-center rounded-[4px] bg-secondary px-5 text-[12px] font-bold text-white shadow-[0_8px_16px_rgba(185,19,23,0.14)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 active:translate-y-0"
+            className="mt-7 inline-flex h-[48px] min-w-[188px] items-center justify-center rounded-[6px] bg-secondary px-7 text-[14px] font-bold text-white shadow-[0_8px_16px_rgba(185,19,23,0.16)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 active:translate-y-0"
           >
             Start Your Journey
           </Link>
@@ -420,7 +420,16 @@ function CourseCatalogSection() {
           {homeCourses.map((course) => (
             <article
               key={`${course.id}-${course.title}`}
-              className="w-full rounded-[13px] bg-white p-[17px] shadow-[0_10px_24px_rgba(17,19,21,0.04)]"
+              role="button"
+              tabIndex={0}
+              onClick={() => router.push("/courses")}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  router.push("/courses");
+                }
+              }}
+              className="group/card w-full cursor-pointer rounded-[13px] bg-white p-[17px] shadow-[0_10px_24px_rgba(17,19,21,0.04)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_18px_42px_rgba(185,19,23,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
             >
               <div className="flex items-center justify-between gap-4">
                 <span className="text-[11px] font-medium text-[#8b8b8b]">
@@ -440,7 +449,7 @@ function CourseCatalogSection() {
                   src="/Downloads/coursecatalog.jpg"
                   alt={`${course.title} classroom`}
                   fill
-                  className="object-cover object-[50%_66%]"
+                  className="object-cover object-[50%_66%] transition-transform duration-300 ease-out group-hover/card:scale-105"
                   sizes="294px"
                 />
               </div>
@@ -458,7 +467,10 @@ function CourseCatalogSection() {
 
               <button
                 type="button"
-                onClick={() => router.push(`/courses/${course.id}`)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  router.push("/courses");
+                }}
                 className="mt-3 flex h-[38px] w-full items-center justify-center rounded-[7px] bg-[#c90f18] text-[11px] font-bold text-white transition-colors hover:bg-[#b91317]"
               >
                 View Details
