@@ -164,6 +164,14 @@ function SectionBlock({
           {subsection.bullets && <BulletList items={subsection.bullets} />}
         </div>
       ))}
+      {section.footerBody?.map((paragraph) => (
+        <p
+          key={paragraph}
+          className="mt-4 text-[14px] leading-7 text-text-secondary sm:text-[15px]"
+        >
+          {paragraph}
+        </p>
+      ))}
       {section.links && (
         <p className="mt-4 text-[14px] leading-7 text-text-secondary sm:text-[15px]">
           {section.links.map((link, linkIndex) => (
