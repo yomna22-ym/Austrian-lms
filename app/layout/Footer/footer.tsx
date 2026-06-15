@@ -2,11 +2,13 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Globe, Share2 } from "lucide-react";
+import { POLICY_ROUTES } from "@/app/constants/routes";
 
 const FOOTER_LINKS = [
-  { label: "Privacy Policy", href: "/policy/privacy-policy" },
-  { label: "Terms of Service", href: "/policy/terms-of-service" },
-  { label: "Legal Notice", href: "/policy/legal-notice" },
+  { label: "Privacy Policy", href: POLICY_ROUTES.privacy },
+  { label: "Terms of Service", href: POLICY_ROUTES.terms },
+  { label: "Refund Policy", href: POLICY_ROUTES.refund },
+  { label: "Legal Notice", href: POLICY_ROUTES.legal },
   { label: "Contact", href: "/contact" },
 ];
 
