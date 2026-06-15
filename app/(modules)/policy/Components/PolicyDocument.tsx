@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowUpRight, CheckCircle2, FileText, ShieldCheck } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowUpRight,
+  CheckCircle2,
+  FileText,
+  Info,
+  ShieldCheck,
+} from "lucide-react";
 import SurfaceCard from "@/app/shared/SurfaceCard";
 import {
   POLICY_NAV_ITEMS,
@@ -11,6 +18,83 @@ type PolicyDocumentProps = {
   content: PolicyDocumentContent;
 };
 
+const VARIANT_STYLES = {
+  default: "",
+  warning:
+    "rounded-[8px] border-l-4 border-secondary bg-[#fff8f8] px-4 py-4 sm:px-5",
+  info: "rounded-[8px] border-l-4 border-[#c9c9c9] bg-[#fafafa] px-4 py-4 sm:px-5",
+} as const;
+
+function BulletList({ items }: { items: string[] }) {
+  return (
+    <ul className="mt-5 grid gap-3">
+      {items.map((item) => (
+        <li
+          key={item}
+          className="flex gap-3 text-[14px] leading-7 text-text-secondary sm:text-[15px]"
+        >
+          <CheckCircle2
+            className="mt-1 h-4 w-4 shrink-0 text-secondary"
+            aria-hidden="true"
+          />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function PolicyTable({
+  table,
+  sectionTitle,
+}: {
+  table: NonNullable<PolicySection["table"]>;
+  sectionTitle: string;
+}) {
+  return (
+    <div className="mt-5 overflow-x-auto rounded-[8px] border border-[#ecdede]">
+      <table
+        className="w-full min-w-[560px] border-collapse text-left text-[13px] sm:text-[14px]"
+        aria-label={table.caption ?? sectionTitle}
+      >
+        {table.caption && (
+          <caption className="sr-only">{table.caption}</caption>
+        )}
+        <thead>
+          <tr className="bg-[#fff3f3]">
+            {table.headers.map((header) => (
+              <th
+                key={header}
+                scope="col"
+                className="px-4 py-3.5 font-bold text-text-primary first:rounded-tl-[7px] last:rounded-tr-[7px]"
+              >
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {table.rows.map((row, rowIndex) => (
+            <tr
+              key={row.join("|")}
+              className={rowIndex % 2 === 0 ? "bg-white" : "bg-[#fdfafa]"}
+            >
+              {row.map((cell, cellIndex) => (
+                <td
+                  key={`${rowIndex}-${cellIndex}`}
+                  className="border-t border-[#f0e8e8] px-4 py-3.5 leading-6 text-text-secondary"
+                >
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function SectionBlock({
   section,
   index,
@@ -18,6 +102,88 @@ function SectionBlock({
   section: PolicySection;
   index: number;
 }) {
+  const variant = section.variant ?? "default";
+  const isCallout = variant !== "default";
+  const CalloutIcon = variant === "warning" ? AlertTriangle : Info;
+
+  const content = (
+    <>
+      {section.body?.map((paragraph) => (
+        <p
+          key={paragraph}
+          className="mt-4 text-[14px] leading-7 text-text-secondary sm:text-[15px]"
+        >
+          {paragraph}
+        </p>
+      ))}
+      {section.table && (
+        <PolicyTable table={section.table} sectionTitle={section.title} />
+      )}
+      {section.bullets && <BulletList items={section.bullets} />}
+      {section.bulletGroups && (
+        <div className="mt-5 grid gap-5">
+          {section.bulletGroups.map((group) => (
+            <div key={group.label}>
+              <p className="text-[14px] font-semibold text-text-primary sm:text-[15px]">
+                {group.label}
+              </p>
+              <ul className="mt-2 grid gap-2">
+                {group.items.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-3 text-[14px] leading-7 text-text-secondary sm:text-[15px]"
+                  >
+                    <CheckCircle2
+                      className="mt-1 h-4 w-4 shrink-0 text-secondary"
+                      aria-hidden="true"
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+      {section.subsections?.map((subsection) => (
+        <div
+          key={subsection.title}
+          className="mt-6 border-l-2 border-secondary/20 pl-4 sm:pl-5"
+        >
+          <h3 className="text-[16px] font-bold leading-snug text-text-primary sm:text-[17px]">
+            {subsection.title}
+          </h3>
+          {subsection.body?.map((paragraph) => (
+            <p
+              key={paragraph}
+              className="mt-3 text-[14px] leading-7 text-text-secondary sm:text-[15px]"
+            >
+              {paragraph}
+            </p>
+          ))}
+          {subsection.bullets && <BulletList items={subsection.bullets} />}
+        </div>
+      ))}
+      {section.links && (
+        <p className="mt-4 text-[14px] leading-7 text-text-secondary sm:text-[15px]">
+          {section.links.map((link, linkIndex) => (
+            <span key={link.href}>
+              {linkIndex > 0 ? " " : null}
+              {link.prefix}
+              <Link
+                href={link.href}
+                className="font-semibold text-secondary underline-offset-4 hover:underline"
+              >
+                {link.label}
+              </Link>
+              {link.suffix}
+            </span>
+          ))}
+        </p>
+      )}
+    </>
+  );
+
   return (
     <section
       id={`section-${index + 1}`}
@@ -27,33 +193,24 @@ function SectionBlock({
         <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] bg-[#fff1f1] text-[12px] font-bold text-secondary">
           {String(index + 1).padStart(2, "0")}
         </span>
-        <div className="min-w-0">
-          <h2 className="text-[20px] font-bold leading-tight text-text-primary sm:text-[22px]">
-            {section.title}
-          </h2>
-          {section.body?.map((paragraph) => (
-            <p
-              key={paragraph}
-              className="mt-4 text-[14px] leading-7 text-text-secondary sm:text-[15px]"
-            >
-              {paragraph}
-            </p>
-          ))}
-          {section.bullets && (
-            <ul className="mt-5 grid gap-3">
-              {section.bullets.map((item) => (
-                <li
-                  key={item}
-                  className="flex gap-3 text-[14px] leading-7 text-text-secondary sm:text-[15px]"
-                >
-                  <CheckCircle2
-                    className="mt-1 h-4 w-4 shrink-0 text-secondary"
-                    aria-hidden="true"
-                  />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start gap-2">
+            {isCallout && (
+              <CalloutIcon
+                className="mt-1.5 h-4 w-4 shrink-0 text-secondary"
+                aria-hidden="true"
+              />
+            )}
+            <h2 className="text-[20px] font-bold leading-tight text-text-primary sm:text-[22px]">
+              {section.title}
+            </h2>
+          </div>
+          {isCallout ? (
+            <div role="note" className={`mt-4 ${VARIANT_STYLES[variant]}`}>
+              {content}
+            </div>
+          ) : (
+            content
           )}
         </div>
       </div>
@@ -63,7 +220,7 @@ function SectionBlock({
 
 export default function PolicyDocument({ content }: PolicyDocumentProps) {
   return (
-    <main className="w-full bg-[linear-gradient(180deg,#ffffff_0%,#fff7f7_36%,#ffffff_100%)]">
+    <main className="w-full bg-white">
       <section className="w-full px-4 pb-12 pt-12 sm:px-6 sm:pt-16 lg:px-16 lg:pb-16">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
@@ -101,7 +258,7 @@ export default function PolicyDocument({ content }: PolicyDocumentProps) {
 
           <nav
             aria-label="Policy pages"
-            className="mt-10 flex flex-col gap-3 sm:flex-row"
+            className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
           >
             {POLICY_NAV_ITEMS.map((item) => {
               const isActive = item.key === content.active;

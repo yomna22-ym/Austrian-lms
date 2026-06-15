@@ -1,1 +1,5 @@
-export type PolicySlug = "privacy-policy" | "terms-of-service" | "legal-notice";
+export type PolicySlug =
+  | "privacy-policy"
+  | "terms-of-service"
+  | "refund-policy"
+  | "legal-notice";

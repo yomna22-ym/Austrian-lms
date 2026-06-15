@@ -24,6 +24,7 @@ export const AUTH_ROUTES = {
 export const POLICY_ROUTES = {
   privacy: "/policy/privacy-policy",
   terms: "/policy/terms-of-service",
+  refund: "/policy/refund-policy",
   legal: "/policy/legal-notice",
 } as const;
 
