@@ -1,6 +1,8 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { MotionDiv, MotionSection } from "@/app/shared/Motion";
+import SectionHeader from "@/app/shared/SectionHeader";
 import type { BranchLocation } from "../types";
 
 type CourseRow = {
@@ -118,18 +120,15 @@ export default function BranchCoursesTable({
   }, []);
 
   return (
-    <section className="w-full bg-[#fff8f8] px-4 py-16 sm:px-6 lg:px-16 lg:py-20">
+    <MotionSection className="w-full bg-white px-4 py-16 sm:px-6 lg:px-16 lg:py-20">
       <div className="mx-auto max-w-7xl">
-        <header className="text-center">
-          <h2 className="text-[30px] font-bold leading-tight text-[#242424] sm:text-[36px]">
-            Browse Courses by Branch
-          </h2>
-          <p className="mt-3 text-[13px] font-medium text-[#777777]">
-            Select your nearest branch to view the full July 2026 schedule
-          </p>
-        </header>
+        <SectionHeader
+          eyebrow="Schedules"
+          title="Browse Courses by Branch"
+          description="Select your nearest branch to view the full July 2026 schedule."
+        />
 
-        <div className="mx-auto mt-8 flex max-w-5xl flex-wrap items-center justify-center gap-3">
+        <MotionDiv className="mx-auto mt-8 flex max-w-5xl flex-wrap items-center justify-center gap-3">
           {branches.map((branch) => (
             <button
               key={branch.id}
@@ -140,10 +139,10 @@ export default function BranchCoursesTable({
                 onBranchSelect(branch.id);
               }}
               className={[
-                "h-10 rounded-full border px-6 text-[12px] font-bold transition-colors",
+                "h-11 rounded-full border px-6 text-[12px] font-bold shadow-[0_1px_2px_rgba(17,19,21,0.04)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/30",
                 !onlineActive && selectedBranchId === branch.id
                   ? "border-[#c90f18] bg-[#c90f18] text-white shadow-[0_8px_18px_rgba(201,15,24,0.18)]"
-                  : "border-[#c90f18] bg-white text-[#242424] hover:bg-[#fff0f1]",
+                  : "border-[#eadede] bg-white text-[#242424] hover:border-secondary/50 hover:text-secondary",
               ].join(" ")}
             >
               {branch.name}
@@ -154,20 +153,24 @@ export default function BranchCoursesTable({
             aria-pressed={onlineActive}
             onClick={() => setOnlineActive(true)}
             className={[
-              "h-10 rounded-full border px-6 text-[12px] font-bold transition-colors",
+              "h-11 rounded-full border px-6 text-[12px] font-bold shadow-[0_1px_2px_rgba(17,19,21,0.04)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/30",
               onlineActive
                 ? "border-[#c90f18] bg-[#c90f18] text-white shadow-[0_8px_18px_rgba(201,15,24,0.18)]"
-                : "border-[#c90f18] bg-white text-[#242424] hover:bg-[#fff0f1]",
+                : "border-[#eadede] bg-white text-[#242424] hover:border-secondary/50 hover:text-secondary",
             ].join(" ")}
           >
             Online
           </button>
-        </div>
+        </MotionDiv>
 
         <div className="mt-10 flex flex-col gap-4 sm:hidden">
           {(Object.keys(groupedRows) as CourseRow["group"][]).map((group) => (
-            <section key={group} className="overflow-hidden rounded-[16px] border border-[#eddede] bg-white shadow-[0_12px_28px_rgba(17,19,21,0.06)]">
-              <div className="bg-[#faebec] px-5 py-3 text-[13px] font-bold text-[#8e5d61]">
+            <MotionDiv
+              key={group}
+              className="overflow-hidden rounded-[18px] border border-[#eadede] bg-white shadow-[0_1px_2px_rgba(17,19,21,0.04),0_18px_40px_rgba(17,19,21,0.06)]"
+              hoverLift
+            >
+              <div className="border-b border-[#eadede] bg-white px-5 py-3 text-[13px] font-bold text-secondary">
                 {group}
               </div>
               <div className="divide-y divide-[#f0eeee]">
@@ -223,109 +226,130 @@ export default function BranchCoursesTable({
                       </div>
                     </dl>
 
-                    <button
-                      type="button"
-                      className="mt-5 h-10 w-full rounded-[8px] border border-[#c90f18] text-[13px] font-bold text-[#c90f18] transition-colors hover:bg-[#c90f18] hover:text-white"
-                    >
-                      Inquire
-                    </button>
+                    {course.status !== "Full" ? (
+                      <button
+                        type="button"
+                        className="mt-5 h-10 w-full rounded-[8px] border border-[#c90f18] text-[13px] font-bold text-[#c90f18] transition-colors hover:bg-[#c90f18] hover:text-white"
+                      >
+                        Inquire
+                      </button>
+                    ) : null}
                   </article>
                 ))}
               </div>
-            </section>
+            </MotionDiv>
           ))}
         </div>
 
-        <div className="mt-10 hidden overflow-hidden rounded-[8px] border border-[#eddede] bg-white shadow-[0_18px_50px_rgba(17,19,21,0.06)] sm:block">
+        <MotionDiv className="mt-10 hidden overflow-hidden rounded-[18px] border border-[#eadede] bg-white shadow-[0_1px_2px_rgba(17,19,21,0.04),0_20px_48px_rgba(17,19,21,0.06)] sm:block">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[930px] border-collapse text-left">
+            <table className="w-full min-w-[980px] border-separate border-spacing-0 text-left">
               <caption className="sr-only">
                 July 2026 course schedule for{" "}
                 {onlineActive ? "Online" : selectedBranch?.name} branch
               </caption>
               <thead>
                 <tr className="bg-[#b91317] text-white">
-                  {["Level", "Teacher", "Textbook", "Days", "Time", "Start", "End", "Price", "Status", "Action"].map(
-                    (heading) => (
-                      <th
-                        key={heading}
-                        scope="col"
-                        className="px-5 py-4 text-[11px] font-bold uppercase"
-                      >
-                        {heading}
-                      </th>
-                    )
-                  )}
+                  {[
+                    "Level",
+                    "Sublevel",
+                    "Teacher",
+                    "Textbook",
+                    "Days",
+                    "Time",
+                    "Start",
+                    "End",
+                    "Price",
+                    "Status",
+                    "Action",
+                  ].map((heading) => (
+                    <th
+                      key={heading}
+                      scope="col"
+                      className={[
+                        "px-5 py-4 text-[11px] font-bold uppercase",
+                        heading === "Level" ? "w-[84px] px-3" : "",
+                      ].join(" ")}
+                    >
+                      {heading}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {(Object.keys(groupedRows) as CourseRow["group"][]).map((group) => (
-                  <Fragment key={group}>
-                    <tr className="bg-[#faebec]">
-                      <th
-                        scope="rowgroup"
-                        colSpan={10}
-                        className="px-5 py-3 text-[12px] font-bold text-[#8e5d61]"
-                      >
-                        {group}
-                      </th>
-                    </tr>
-                    {groupedRows[group].map((course) => (
-                      <tr
-                        key={`${group}-${course.level}-${course.teacher}-${course.start}`}
-                        className="border-t border-[#f0eeee] bg-white"
-                      >
-                        <td className="px-5 py-5 text-[13px] font-bold text-[#242424]">
-                          {course.level}
+                {(Object.keys(groupedRows) as CourseRow["group"][]).map((group, groupIndex) =>
+                  groupedRows[group].map((course, index) => (
+                    <tr
+                      key={`${group}-${course.level}-${course.teacher}-${course.start}`}
+                      className="border-t border-[#f0eeee] bg-white"
+                    >
+                      {index === 0 ? (
+                        <td
+                          rowSpan={groupedRows[group].length}
+                          className={[
+                            "h-px w-[84px] border-r border-[#f0eeee] bg-white p-2 align-top",
+                            groupIndex > 0 ? "pt-3" : "",
+                          ].join(" ")}
+                        >
+                          <div className="flex h-full min-h-full items-stretch">
+                            <div className="flex w-full items-center justify-center rounded-[10px] border border-[#eadede] bg-white px-2 py-5 text-[14px] font-bold text-[#b91317] shadow-[0_1px_2px_rgba(17,19,21,0.04)]">
+                              {group}
+                            </div>
+                          </div>
                         </td>
-                        <td className="px-5 py-5 text-[13px] text-[#333333]">
-                          {course.teacher}
-                        </td>
-                        <td className="px-5 py-5 text-[13px] text-[#777777]">
-                          {course.textbook}
-                        </td>
-                        <td className="px-5 py-5 text-[13px] font-semibold text-[#242424]">
-                          {course.days}
-                        </td>
-                        <td className="px-5 py-5 text-[13px] text-[#777777]">
-                          {course.time}
-                        </td>
-                        <td className="px-5 py-5 text-[13px] text-[#242424]">
-                          {course.start}
-                        </td>
-                        <td className="px-5 py-5 text-[13px] text-[#242424]">
-                          {course.end}
-                        </td>
-                        <td className="px-5 py-5 text-[13px] font-extrabold text-[#242424]">
-                          {course.price}
-                        </td>
-                        <td className="px-5 py-5">
-                          <span
-                            className={[
-                              "rounded-full px-3 py-1 text-[10px] font-bold uppercase",
-                              statusClass[course.status],
-                            ].join(" ")}
-                          >
-                            {course.status}
-                          </span>
-                        </td>
-                        <td className="px-5 py-5">
+                      ) : null}
+                      <td className="px-5 py-5 text-[13px] font-bold text-[#242424]">
+                        {course.level}
+                      </td>
+                      <td className="px-5 py-5 text-[13px] text-[#333333]">
+                        {course.teacher}
+                      </td>
+                      <td className="px-5 py-5 text-[13px] text-[#777777]">
+                        {course.textbook}
+                      </td>
+                      <td className="px-5 py-5 text-[13px] font-semibold text-[#242424]">
+                        {course.days}
+                      </td>
+                      <td className="px-5 py-5 text-[13px] text-[#777777]">
+                        {course.time}
+                      </td>
+                      <td className="px-5 py-5 text-[13px] text-[#242424]">
+                        {course.start}
+                      </td>
+                      <td className="px-5 py-5 text-[13px] text-[#242424]">
+                        {course.end}
+                      </td>
+                      <td className="px-5 py-5 text-[13px] font-extrabold text-[#242424]">
+                        {course.price}
+                      </td>
+                      <td className="px-5 py-5">
+                        <span
+                          className={[
+                            "rounded-full px-3 py-1 text-[10px] font-bold uppercase",
+                            statusClass[course.status],
+                          ].join(" ")}
+                        >
+                          {course.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-5">
+                        {course.status !== "Full" ? (
                           <button
                             type="button"
                             className="h-8 rounded-[6px] border border-[#c90f18] px-4 text-[11px] font-bold text-[#c90f18] transition-colors hover:bg-[#c90f18] hover:text-white"
                           >
                             Inquire
                           </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </Fragment>
-                ))}
+                        ) : null}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
-        </div>
+        </MotionDiv>
       </div>
-    </section>
+    </MotionSection>
   );
 }

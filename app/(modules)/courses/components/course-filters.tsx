@@ -1,38 +1,65 @@
 "use client";
 
-import { useState } from "react";
 import {
   BarChart3,
   CalendarDays,
   ChevronDown,
   Globe2,
-  Trash2,
+  SlidersHorizontal,
 } from "lucide-react";
-import { COURSE_FORMATS, COURSE_MONTHS } from "../utils";
+import type { ReactNode } from "react";
+import { useState } from "react";
+import type {
+  CourseFilters,
+  CourseSchedule,
+  DayAbbrev,
+} from "../types/course.types";
+import {
+  COURSE_CATEGORIES,
+  COURSE_BRANCHES,
+  COURSE_DAYS,
+  COURSE_FORMATS,
+  COURSE_MONTHS,
+  COURSE_SCHEDULES,
+} from "../utils";
 
-const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
-const schedules = ["Morning (9:00 - 12:00)", "Evening (18:00 - 21:00)"] as const;
+interface CourseFiltersSidebarProps {
+  filters: CourseFilters;
+  activeFilterCount: number;
+  onDaysChange: (days: DayAbbrev[]) => void;
+  onCategoryChange: (category: CourseFilters["category"]) => void;
+  onBranchChange: (branch: CourseFilters["branch"]) => void;
+  onLevelChange: (level: CourseFilters["level"]) => void;
+  onScheduleToggle: (schedule: CourseSchedule) => void;
+  onMonthChange: (month: CourseFilters["startMonth"]) => void;
+  onFormatChange: (format: CourseFilters["format"]) => void;
+  onClearAll: () => void;
+  onClose?: () => void;
+}
 
 const SelectBox = ({
   label,
+  icon,
   value,
   options,
   onChange,
 }: {
   label: string;
+  icon?: ReactNode;
   value: string;
-  options: string[];
+  options: { value: string; label: string }[];
   onChange: (value: string) => void;
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const selectedLabel =
+    options.find((option) => option.value === value)?.label ?? value;
 
   return (
     <section>
-      {label ? (
-        <label className="text-[13px] font-bold tracking-[0.02em] text-[#242424]">
-          {label}
-        </label>
-      ) : null}
+      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">
+        {icon}
+        <span>{label}</span>
+      </div>
       <div className="relative mt-3">
         <button
           type="button"
@@ -40,14 +67,16 @@ const SelectBox = ({
           aria-expanded={dropdownOpen}
           onClick={() => setDropdownOpen((current) => !current)}
           className={[
-            "flex h-11 w-full items-center justify-between rounded-[10px] border bg-[#f1f1f3] px-4 text-left text-[14px] font-semibold text-[#777777] outline-none transition-colors",
-            dropdownOpen ? "border-[#d10012]" : "border-[#e3e3e3] hover:border-[#d5d5d5]",
+            "flex h-11 w-full items-center justify-between rounded-input border bg-white px-4 text-left text-sm font-medium text-text-primary outline-none transition-all duration-150",
+            dropdownOpen
+              ? "border-secondary/50 ring-2 ring-secondary/10"
+              : "border-input-border hover:border-secondary/30",
           ].join(" ")}
         >
-          <span>{value}</span>
+          <span>{selectedLabel}</span>
           <ChevronDown
             className={[
-              "h-5 w-5 text-[#666666] transition-transform",
+              "h-4 w-4 text-text-secondary transition-transform duration-200",
               dropdownOpen ? "rotate-180" : "",
             ].join(" ")}
             strokeWidth={2.1}
@@ -58,29 +87,29 @@ const SelectBox = ({
         {dropdownOpen ? (
           <div
             role="listbox"
-            className="absolute left-0 right-0 top-[calc(100%+6px)] z-20 overflow-hidden rounded-[12px] border border-[#dedede] bg-white shadow-[0_12px_24px_rgba(17,19,21,0.12)]"
+            className="absolute left-0 right-0 top-[calc(100%+6px)] z-20 overflow-hidden rounded-xl border border-input-border bg-white shadow-[0_12px_28px_rgba(17,19,21,0.1)]"
           >
             {options.map((option) => {
-              const active = option === value;
+              const active = option.value === value;
 
               return (
                 <button
-                  key={option}
+                  key={option.value}
                   type="button"
                   role="option"
                   aria-selected={active}
                   onClick={() => {
-                    onChange(option);
+                    onChange(option.value);
                     setDropdownOpen(false);
                   }}
                   className={[
-                    "flex h-9 w-full items-center px-4 text-left text-[14px] font-semibold transition-colors",
+                    "flex h-10 w-full items-center px-4 text-left text-sm font-medium transition-colors",
                     active
-                      ? "bg-[#777777] text-white"
-                      : "bg-white text-[#777777] hover:bg-[#f1f1f3]",
+                      ? "bg-secondary text-white"
+                      : "text-text-primary hover:bg-[#fff7f7]",
                   ].join(" ")}
                 >
-                  {option}
+                  {option.label}
                 </button>
               );
             })}
@@ -91,192 +120,213 @@ const SelectBox = ({
   );
 };
 
-const LevelSelectBox = ({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) => (
-  <section>
-    <div className="flex items-center gap-2 text-[13px] font-bold text-[#242424]">
-      <BarChart3 className="h-4 w-4" strokeWidth={2.3} aria-hidden="true" />
-      <span>Level</span>
-    </div>
-    <SelectBox
-      label=""
-      value={value}
-      options={["All level", "A1-A2", "B1-B2", "C1-C2"]}
-      onChange={onChange}
-    />
-  </section>
-);
+function daysSummary(days: DayAbbrev[]): string {
+  if (days.length === 0) return "None";
+  if (days.length === 7) return "All days";
+  if (days.length <= 3) return days.join(" → ");
+  return `${days.length} days`;
+}
 
-export default function CourseFilters() {
-  const [selectedDays, setSelectedDays] = useState<string[]>(["Mon", "Tue", "Wed"]);
-  const [category, setCategory] = useState("Standard");
-  const [branch, setBranch] = useState("Maadi");
-  const [level, setLevel] = useState("All level");
-  const [selectedSchedules, setSelectedSchedules] = useState<string[]>([]);
-  const [month, setMonth] = useState("Feb");
-  const [format, setFormat] = useState("All");
-
-  const resetFilters = () => {
-    setSelectedDays(["Mon", "Tue", "Wed"]);
-    setCategory("Standard");
-    setBranch("Maadi");
-    setLevel("All level");
-    setSelectedSchedules([]);
-    setMonth("Feb");
-    setFormat("All");
+export default function CourseFiltersSidebar({
+  filters,
+  activeFilterCount,
+  onDaysChange,
+  onCategoryChange,
+  onBranchChange,
+  onLevelChange,
+  onScheduleToggle,
+  onMonthChange,
+  onFormatChange,
+  onClearAll,
+}: CourseFiltersSidebarProps) {
+  const toggleDay = (day: DayAbbrev) => {
+    const exists = filters.selectedDays.includes(day);
+    onDaysChange(
+      exists
+        ? filters.selectedDays.filter((item) => item !== day)
+        : [...filters.selectedDays, day],
+    );
   };
 
   return (
-    <aside className="w-full bg-white nav:w-[300px] nav:shrink-0">
-      <div className="px-5 py-6">
+    <aside className="flex flex-col gap-8">
+      <div className="hidden items-center gap-2 lg:flex">
+        <SlidersHorizontal size={18} className="text-secondary" />
+        <h2 className="text-lg font-bold text-text-primary">Filters</h2>
+      </div>
+
+      <section>
         <div className="flex items-center justify-between gap-3">
-          <h2 className="text-[20px] font-bold text-[#242424]">Filters</h2>
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">
+            <CalendarDays className="h-4 w-4" strokeWidth={2.1} aria-hidden="true" />
+            <span>Available Days</span>
+          </div>
+          <span className="rounded-full bg-secondary/10 px-2.5 py-1 text-[10px] font-bold text-secondary">
+            {daysSummary(filters.selectedDays)}
+          </span>
+        </div>
+
+        <div className="mt-4 grid grid-cols-7 gap-1.5">
+          {COURSE_DAYS.map((day) => {
+            const active = filters.selectedDays.includes(day);
+
+            return (
+              <button
+                key={day}
+                type="button"
+                aria-pressed={active}
+                onClick={() => toggleDay(day)}
+                className={[
+                  "h-9 rounded-lg text-[11px] font-bold transition-all duration-200",
+                  active
+                    ? "bg-secondary text-white shadow-[0_2px_8px_rgba(185,19,23,0.25)] scale-[1.02]"
+                    : "border border-input-border bg-white text-text-primary hover:border-secondary/30 active:scale-95",
+                ].join(" ")}
+              >
+                {day}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <SelectBox
+        label="Course Category"
+        value={filters.category}
+        options={[
+          { value: "all", label: "All categories" },
+          ...COURSE_CATEGORIES.map((item) => ({ value: item, label: item })),
+        ]}
+        onChange={(value) =>
+          onCategoryChange(value as CourseFilters["category"])
+        }
+      />
+
+      <SelectBox
+        label="Branch"
+        value={filters.branch}
+        options={[
+          { value: "all", label: "All branches" },
+          ...COURSE_BRANCHES.map((item) => ({ value: item, label: item })),
+        ]}
+        onChange={(value) => onBranchChange(value as CourseFilters["branch"])}
+      />
+
+      <SelectBox
+        label="Level"
+        icon={<BarChart3 className="h-4 w-4" strokeWidth={2.3} aria-hidden="true" />}
+        value={filters.level}
+        options={[
+          { value: "all", label: "All levels" },
+          { value: "A1-A2", label: "A1-A2" },
+          { value: "B1-B2", label: "B1-B2" },
+          { value: "C1-C2", label: "C1-C2" },
+        ]}
+        onChange={(value) => onLevelChange(value as CourseFilters["level"])}
+      />
+
+      <section>
+        <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">
+          Schedule
+        </h3>
+        <div className="mt-4 flex flex-col gap-3">
+          {COURSE_SCHEDULES.map((schedule) => (
+            <label
+              key={schedule}
+              className="group flex cursor-pointer items-center gap-3 rounded-xl border border-transparent px-1 py-0.5 text-sm text-text-primary transition-colors hover:border-secondary/10"
+            >
+              <input
+                type="checkbox"
+                checked={filters.schedules.includes(schedule)}
+                onChange={() => onScheduleToggle(schedule)}
+                className="h-4 w-4 rounded border-input-border accent-secondary"
+              />
+              <span className="font-medium group-hover:text-secondary">
+                {schedule}
+              </span>
+            </label>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">
+          Start Month
+        </h3>
+        <div className="mt-4 grid grid-cols-4 gap-2">
           <button
             type="button"
-            onClick={resetFilters}
-            className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[#d10012] transition-opacity hover:opacity-75"
+            aria-pressed={filters.startMonth === "all"}
+            onClick={() => onMonthChange("all")}
+            className={[
+              "col-span-4 h-9 rounded-lg border text-xs font-bold transition-all duration-200",
+              filters.startMonth === "all"
+                ? "border-secondary bg-secondary text-white"
+                : "border-input-border bg-white text-text-primary hover:border-secondary/30",
+            ].join(" ")}
           >
-            Reset Filters
-            <Trash2 className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
+            Any month
           </button>
+          {COURSE_MONTHS.map((item) => (
+            <button
+              key={item}
+              type="button"
+              aria-pressed={filters.startMonth === item}
+              onClick={() => onMonthChange(item)}
+              className={[
+                "h-9 rounded-lg border text-xs font-bold transition-all duration-200",
+                filters.startMonth === item
+                  ? "border-secondary bg-secondary text-white shadow-[0_2px_6px_rgba(185,19,23,0.2)]"
+                  : "border-input-border bg-white text-text-primary hover:border-secondary/30 active:scale-95",
+              ].join(" ")}
+            >
+              {item}
+            </button>
+          ))}
         </div>
+      </section>
 
-        <div className="mt-9 flex flex-col gap-7">
-          <section className="border-b border-[#eeeeee] pb-6">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-[13px] font-bold text-[#242424]">
-                <CalendarDays className="h-4 w-4" strokeWidth={2.1} aria-hidden="true" />
-                <span>Available Days</span>
-              </div>
-              <span className="rounded-full bg-[#c90f18] px-2.5 py-1 text-[10px] font-bold text-white">
-                Mon -&gt; Wed
-              </span>
-            </div>
-
-            <div className="mt-4 grid grid-cols-7 gap-1.5">
-              {days.map((day) => {
-                const active = selectedDays.includes(day);
-
-                return (
-                  <button
-                    key={day}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() =>
-                      setSelectedDays((current) =>
-                        active
-                          ? current.filter((item) => item !== day)
-                          : [...current, day]
-                      )
-                    }
-                    className={[
-                      "h-8 rounded-[4px] text-[11px] font-bold transition-colors",
-                      active
-                        ? "bg-[#c90f18] text-white"
-                        : "bg-[#efefef] text-[#242424] hover:bg-[#e5e5e5]",
-                    ].join(" ")}
-                  >
-                    {day}
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
-          <SelectBox
-            label="Course category"
-            value={category}
-            options={["Standard", "Intensive", "Conversation"]}
-            onChange={setCategory}
-          />
-          <SelectBox
-            label="Branchs"
-            value={branch}
-            options={["Maadi", "Zamalek", "New Cairo"]}
-            onChange={setBranch}
-          />
-
-          <LevelSelectBox value={level} onChange={setLevel} />
-
-          <section>
-            <h3 className="text-[15px] font-bold text-[#242424]">Schedule</h3>
-            <div className="mt-4 flex flex-col gap-3">
-              {schedules.map((schedule) => (
-                <label
-                  key={schedule}
-                  className="flex cursor-pointer items-center gap-3 text-[14px] font-normal text-[#242424]"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedSchedules.includes(schedule)}
-                    onChange={(event) =>
-                      setSelectedSchedules((current) =>
-                        event.target.checked
-                          ? [...current, schedule]
-                          : current.filter((item) => item !== schedule)
-                      )
-                    }
-                    className="h-4 w-4 rounded-[4px] border border-[#e2e2e2] accent-[#c90f18]"
-                  />
-                  {schedule}
-                </label>
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <h3 className="text-[15px] font-bold text-[#242424]">Start Month</h3>
-            <div className="mt-4 grid grid-cols-4 gap-2">
-              {COURSE_MONTHS.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  aria-pressed={month === item}
-                  onClick={() => setMonth(item)}
-                  className={[
-                    "h-8 rounded-[7px] border text-[12px] font-bold transition-colors",
-                    month === item
-                      ? "border-[#c90f18] bg-[#c90f18] text-white"
-                      : "border-[#e4e4e4] bg-white text-[#242424] hover:bg-[#f5f5f5]",
-                  ].join(" ")}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <div className="flex items-center gap-2 text-[13px] font-bold text-[#242424]">
-              <Globe2 className="h-4 w-4" strokeWidth={2.2} aria-hidden="true" />
-              <span>Format</span>
-            </div>
-            <div className="mt-4 grid grid-cols-3 rounded-[8px] bg-[#f1f1f3] p-1">
-              {COURSE_FORMATS.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  aria-pressed={format === item}
-                  onClick={() => setFormat(item)}
-                  className={[
-                    "h-8 rounded-[6px] text-[11px] font-bold transition-colors",
-                    format === item
-                      ? "bg-[#c90f18] text-white"
-                      : "text-[#242424] hover:bg-white",
-                  ].join(" ")}
-                >
-                  {item}
-                </button>
-              ))}
-            </div>
-          </section>
+      <section>
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">
+          <Globe2 className="h-4 w-4" strokeWidth={2.2} aria-hidden="true" />
+          <span>Format</span>
         </div>
-      </div>
+        <div className="mt-4 grid grid-cols-3 rounded-xl bg-[#f8f4f4] p-1">
+          {COURSE_FORMATS.map((item) => {
+            const value = item === "All" ? "all" : item;
+            const active = filters.format === value;
+
+            return (
+              <button
+                key={item}
+                type="button"
+                aria-pressed={active}
+                onClick={() =>
+                  onFormatChange(value as CourseFilters["format"])
+                }
+                className={[
+                  "h-9 rounded-lg text-[11px] font-bold transition-all duration-200",
+                  active
+                    ? "bg-secondary text-white shadow-sm"
+                    : "text-text-primary hover:bg-white",
+                ].join(" ")}
+              >
+                {item}
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {activeFilterCount > 0 ? (
+        <button
+          type="button"
+          onClick={onClearAll}
+          className="hidden rounded-full border border-secondary/30 py-2.5 text-sm font-semibold text-secondary transition-all hover:bg-secondary/5 lg:block"
+        >
+          Clear all filters ({activeFilterCount})
+        </button>
+      ) : null}
     </aside>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import type { EventFilters, EventTypeFilter } from "../types";
-import { EVENT_TYPES, PRICE_RANGE } from "../utils";
+import type { EventFilters, EventItem, EventTypeFilter, PriceRange } from "../types";
+import { EVENT_TYPES } from "../utils";
 import EventCalendar from "./filters/event-calendar";
 import EventTypeChips from "./filters/event-type-chips";
 import FilterSection from "./filters/filter-section";
@@ -12,11 +12,13 @@ interface EventsFiltersSidebarProps {
   filters: EventFilters;
   locations: readonly string[];
   eventDates: readonly Date[];
+  priceRange: PriceRange;
   activeFilterCount: number;
   onDateChange: (date: Date | null) => void;
   onEventTypeChange: (type: EventTypeFilter) => void;
   onLocationChange: (location: string) => void;
   onMaxPriceChange: (maxPrice: number) => void;
+  onMaxPriceCommit?: () => void;
   onClearAll: () => void;
   onClose?: () => void;
 }
@@ -25,11 +27,13 @@ export default function EventsFiltersSidebar({
   filters,
   locations,
   eventDates,
+  priceRange,
   activeFilterCount,
   onDateChange,
   onEventTypeChange,
   onLocationChange,
   onMaxPriceChange,
+  onMaxPriceCommit,
   onClearAll,
 }: EventsFiltersSidebarProps) {
   return (
@@ -68,11 +72,12 @@ export default function EventsFiltersSidebar({
       </FilterSection>
 
       <PriceRangeSlider
-        min={PRICE_RANGE.min}
-        max={PRICE_RANGE.max}
-        step={PRICE_RANGE.step}
+        min={priceRange.min}
+        max={priceRange.max}
+        step={priceRange.step}
         value={filters.maxPrice}
         onChange={onMaxPriceChange}
+        onCommit={onMaxPriceCommit}
       />
 
       {activeFilterCount > 0 && (

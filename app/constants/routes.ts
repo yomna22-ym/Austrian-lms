@@ -12,6 +12,10 @@ export const WEBSITE_ROUTES = {
   placementTest: "/placement-test",
 } as const;
 
+export const ACCOUNT_ROUTES = {
+  profile: "/account",
+} as const;
+
 export const AUTH_ROUTES = {
   root: "/auth",
   login: "/auth/login",
@@ -30,7 +34,9 @@ export const POLICY_ROUTES = {
 
 export const PLACEMENT_TEST_ROUTES = {
   landing: "/placement-test",
+  overview: "/placement-test/overview",
   checkout: "/placement-test/checkout",
   training: "/placement-test/training",
   trainingMcqPractice: "/placement-test/training/mcq-practice",
+  continue: "/placement-test/continue",
 } as const;

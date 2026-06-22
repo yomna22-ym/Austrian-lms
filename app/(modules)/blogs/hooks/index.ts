@@ -1,1 +1,1 @@
-/** hooks */
+export * from "./use-blogs-list";

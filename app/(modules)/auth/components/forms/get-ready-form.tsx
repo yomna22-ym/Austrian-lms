@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/app/shared/Button/Button";
 import { Upload, FileText } from "lucide-react";
-import { WEBSITE_ROUTES } from "@/app/constants/routes";
+import { PLACEMENT_TEST_ROUTES, WEBSITE_ROUTES } from "@/app/constants/routes";
 import AuthFormLayout from "../auth-form-layout";
 
 export default function GetReadyForm() {
@@ -44,7 +44,7 @@ export default function GetReadyForm() {
             bgColorClass="bg-secondary hover:brightness-110 active:brightness-95"
             textColorClass="text-primary"
             className="shadow-sm hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm"
-            onClick={() => router.push(WEBSITE_ROUTES.placementTest)}
+            onClick={() => router.push(PLACEMENT_TEST_ROUTES.overview)}
           />
         </section>
         <section className="flex flex-col gap-3">

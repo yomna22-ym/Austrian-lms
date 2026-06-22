@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Input from "@/app/shared/Input/Input";
+import Select from "@/app/shared/Select/Select";
 import Button from "@/app/shared/Button/Button";
 import { Eye, EyeOff } from "lucide-react";
 import { AUTH_ROUTES, POLICY_ROUTES } from "@/app/constants/routes";
@@ -12,6 +13,7 @@ export default function SignUpForm() {
   const {
     values,
     errors,
+    formError,
     showPassword,
     setShowPassword,
     showConfirm,
@@ -19,6 +21,9 @@ export default function SignUpForm() {
     setField,
     handleSubmit,
     isSubmitting,
+    branchOptions,
+    branchesLoading,
+    branchesError,
   } = useSignUpForm();
 
   return (
@@ -37,10 +42,19 @@ export default function SignUpForm() {
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 sm:gap-5">
+        {formError && (
+          <p
+            className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600"
+            role="alert"
+          >
+            {formError}
+          </p>
+        )}
+
         <Input
           label="Full Name"
           width="w-full min-w-0"
-          placeholder="Johann Wolfgang von Goethe"
+          placeholder="Anna Muster"
           value={values.fullName}
           onChange={(v) => setField("fullName", v)}
           autoComplete="name"
@@ -64,19 +78,21 @@ export default function SignUpForm() {
             width="w-full min-w-0"
             type="tel"
             placeholder="+43 1 234567"
-            value={values.phone}
+            value={values.phone ?? ""}
             onChange={(v) => setField("phone", v)}
             autoComplete="tel"
             error={errors.phone}
-            required
           />
-          <Input
-            label="City, Country"
+          <Select
+            label="Branch"
             width="w-full min-w-0"
-            placeholder="Vienna, Austria"
-            value={values.city ?? ""}
-            onChange={(v) => setField("city", v)}
-            autoComplete="address-level2"
+            value={values.branchId}
+            onChange={(v) => setField("branchId", v)}
+            options={branchOptions}
+            placeholder={branchesLoading ? "Loading branches…" : "Select a branch"}
+            error={errors.branchId ?? branchesError ?? undefined}
+            disabled={branchesLoading || branchOptions.length === 0}
+            required
           />
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4 md:gap-5">
@@ -146,8 +162,15 @@ export default function SignUpForm() {
                 className="font-semibold text-secondary underline-offset-4 hover:underline"
               >
                 Terms of Service
-              </Link>{" "}
-              and{" "}
+              </Link>
+              ,{" "}
+              <Link
+                href={POLICY_ROUTES.refund}
+                className="font-semibold text-secondary underline-offset-4 hover:underline"
+              >
+                Refund Policy
+              </Link>
+              , and{" "}
               <Link
                 href={POLICY_ROUTES.privacy}
                 className="font-semibold text-secondary underline-offset-4 hover:underline"
@@ -171,6 +194,7 @@ export default function SignUpForm() {
           bgColorClass="bg-secondary hover:brightness-110 active:brightness-95"
           textColorClass="text-primary"
           className="mt-1 shadow-sm hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm sm:mt-2"
+          disabled={isSubmitting || branchesLoading || branchOptions.length === 0}
         />
       </form>
     </AuthFormLayout>

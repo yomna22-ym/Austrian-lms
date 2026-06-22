@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { isRemoteAssetUrl } from "@/lib/asset-url";
 import { ArrowRight, CalendarDays, Users } from "lucide-react";
 import Button from "@/app/shared/Button/Button";
 
@@ -567,6 +568,7 @@ function EventCard({
             fill
             className="object-cover"
             sizes="(max-width: 640px) 100vw, 320px"
+            unoptimized={isRemoteAssetUrl(image)}
           />
 
           {dateBadge && (

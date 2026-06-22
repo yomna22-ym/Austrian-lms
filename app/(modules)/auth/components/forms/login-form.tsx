@@ -12,6 +12,7 @@ export default function LoginForm() {
   const {
     values,
     errors,
+    formError,
     showPassword,
     setShowPassword,
     setField,
@@ -35,6 +36,15 @@ export default function LoginForm() {
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4 sm:gap-5">
+        {formError && (
+          <p
+            className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-600"
+            role="alert"
+          >
+            {formError}
+          </p>
+        )}
+
         <Input
           label="Email Address"
           width="w-full min-w-0"

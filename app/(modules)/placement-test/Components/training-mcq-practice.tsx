@@ -19,8 +19,13 @@ import {
   Underline,
   X,
 } from "lucide-react";
+import Link from "next/link";
 import Button from "@/app/shared/Button/Button";
+import { ACCOUNT_ROUTES } from "@/app/constants/routes";
+import { hasStudentProfile } from "@/lib/auth/profile";
+import { useAuthStore, type AuthState } from "@/stores/auth.store";
 import { usePlacementNavigation } from "../hooks";
+import { placementTestService } from "../services/placement-test.service";
 
 type PracticeStep = "mcq" | "speaking" | "writing" | "complete";
 type ModalType = "missing-answer" | "missing-recording" | "missing-writing";
@@ -99,8 +104,11 @@ const Waveform: React.FC<WaveformProps> = ({ progress }) => {
 };
 
 const TrainingMcqPractice = () => {
-  const { goToHome, goToTraining } = usePlacementNavigation();
+  const { goToTraining, goToContinue } = usePlacementNavigation();
+  const refreshUser = useAuthStore((state: AuthState) => state.refreshUser);
   const [step, setStep] = useState<PracticeStep>("mcq");
+  const [isStartingTest, setIsStartingTest] = useState(false);
+  const [startError, setStartError] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(STEP_CONFIG.mcq.seconds);
   const [modalType, setModalType] = useState<ModalType | null>(null);
@@ -126,6 +134,29 @@ const TrainingMcqPractice = () => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const continueAfterRecordingStopRef = useRef(false);
+
+  const handleStartTest = async () => {
+    setIsStartingTest(true);
+    setStartError(null);
+    try {
+      const user = await refreshUser();
+      if (!user || !hasStudentProfile(user)) {
+        setStartError(
+          "Student profile not ready. Visit your account page or log out and back in.",
+        );
+        setIsStartingTest(false);
+        return;
+      }
+
+      await placementTestService.startOrResume();
+      goToContinue();
+    } catch (err) {
+      setStartError(
+        err instanceof Error ? err.message : "Something went wrong. Please try again.",
+      );
+      setIsStartingTest(false);
+    }
+  };
 
   const activeConfig = STEP_CONFIG[step];
   const timedStep = step !== "complete";
@@ -717,19 +748,33 @@ const TrainingMcqPractice = () => {
         You have completed the practice flow. You can now continue to the real
         placement test.
       </p>
-      <div className="mt-7 flex justify-center">
+      <div className="mt-7 flex flex-col items-center gap-3">
         <Button
-          label="Start The Test"
+          label={isStartingTest ? "Starting…" : "Start The Test"}
           type="button"
           width="w-[190px]"
           height="h-[50px]"
-          bgColorClass="bg-secondary hover:brightness-110"
+          bgColorClass="bg-secondary hover:brightness-110 disabled:opacity-60"
           textColorClass="text-primary"
           className="rounded-[8px] text-base font-bold shadow-[0_4px_12px_rgba(185,19,23,0.25)]"
           icon={<ArrowRight className="h-5 w-5" aria-hidden="true" />}
           iconPosition="right"
-          onClick={goToHome}
+          onClick={handleStartTest}
+          disabled={isStartingTest}
         />
+        {startError && (
+          <div className="max-w-[360px] text-center text-xs text-red-600">
+            <p>{startError}</p>
+            {startError.includes("Student profile") ? (
+              <Link
+                href={ACCOUNT_ROUTES.profile}
+                className="mt-2 inline-block font-semibold text-secondary underline"
+              >
+                Go to my account
+              </Link>
+            ) : null}
+          </div>
+        )}
       </div>
     </section>
   );

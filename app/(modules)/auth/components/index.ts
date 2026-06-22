@@ -1,4 +1,5 @@
 export { default as AuthShell } from "./auth-shell";
+export { AuthGate } from "./auth-gate";
 export { default as AuthFormLayout } from "./auth-form-layout";
 export { default as LoginForm } from "./forms/login-form";
 export { default as SignUpForm } from "./forms/sign-up-form";

@@ -1,19 +1,11 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import dynamic from "next/dynamic";
 import type { BranchLocation } from "./types";
 import { findNearestBranch } from "@/app/(modules)/branches/utils";
+import { MotionDiv } from "@/app/shared/Motion";
 import BranchListCard from "./BranchListCard";
-
-const BranchMapView = dynamic(() => import("./BranchMapView"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-[320px] w-full items-center justify-center rounded-2xl bg-input-bg ring-1 ring-input-border sm:h-[400px] lg:h-[520px]">
-      <p className="text-sm text-text-secondary">Loading map…</p>
-    </div>
-  ),
-});
+import BranchMapView from "./BranchMapView";
 
 export interface LocationFrameProps {
   branches: readonly BranchLocation[];
@@ -76,21 +68,24 @@ const LocationFrame = ({
         .join(" ")}
     >
       <div className="flex flex-col gap-3">
-        {branches.map((branch) => (
-          <BranchListCard
-            key={branch.id}
-            branch={branch}
-            isActive={branch.id === selectedBranchId}
-            onSelect={setSelectedBranchId}
-          />
+        {branches.map((branch, index) => (
+          <MotionDiv key={branch.id} delay={index * 0.05}>
+            <BranchListCard
+              branch={branch}
+              isActive={branch.id === selectedBranchId}
+              onSelect={setSelectedBranchId}
+            />
+          </MotionDiv>
         ))}
       </div>
 
-      <BranchMapView
-        branch={selectedBranch}
-        onLocate={handleLocate}
-        locateLabel="Find nearest branch"
-      />
+      <MotionDiv delay={0.12}>
+        <BranchMapView
+          branch={selectedBranch}
+          onLocate={handleLocate}
+          locateLabel="Find nearest branch"
+        />
+      </MotionDiv>
     </div>
   );
 };

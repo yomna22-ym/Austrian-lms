@@ -2,14 +2,37 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
-import { BLOG_CATEGORIES } from "../utils";
+import type { BlogCategoryOption, BlogSortOption } from "../types";
 
-const SORT_OPTIONS = ["Latest", "Most Popular", "Oldest"] as const;
+const SORT_OPTIONS: { label: string; value: BlogSortOption }[] = [
+  { label: "Latest", value: "latest" },
+  { label: "Most Popular", value: "popular" },
+  { label: "Oldest", value: "oldest" },
+];
 
-export default function BlogFilterToolbar() {
-  const [activeCategory, setActiveCategory] = useState<(typeof BLOG_CATEGORIES)[number]>("All");
-  const [searchValue, setSearchValue] = useState("");
-  const [selectedSort, setSelectedSort] = useState<(typeof SORT_OPTIONS)[number]>("Latest");
+interface BlogFilterToolbarProps {
+  categories: BlogCategoryOption[];
+  search: string;
+  sort: BlogSortOption;
+  activeCategoryId: string;
+  onSearchChange: (value: string) => void;
+  onCategoryChange: (categoryId: string) => void;
+  onSortChange: (sort: BlogSortOption) => void;
+}
+
+function getSortLabel(sort: BlogSortOption): string {
+  return SORT_OPTIONS.find((option) => option.value === sort)?.label ?? "Latest";
+}
+
+export default function BlogFilterToolbar({
+  categories,
+  search,
+  sort,
+  activeCategoryId,
+  onSearchChange,
+  onCategoryChange,
+  onSortChange,
+}: BlogFilterToolbarProps) {
   const [sortOpen, setSortOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -25,22 +48,35 @@ export default function BlogFilterToolbar() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 rounded-[2px] bg-white px-4 py-4 shadow-[0_8px_20px_rgba(17,19,21,0.03)] md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-5 rounded-[18px] border border-[#eadede] bg-white p-4 shadow-[0_1px_2px_rgba(17,19,21,0.04),0_20px_48px_rgba(17,19,21,0.06)] md:flex-row md:items-center md:justify-between">
       <div className="flex flex-wrap gap-3">
-        {BLOG_CATEGORIES.map((category) => (
+        <button
+          type="button"
+          aria-pressed={!activeCategoryId}
+          onClick={() => onCategoryChange("")}
+          className={[
+            "h-11 rounded-full border px-5 text-[12px] font-bold shadow-[0_1px_2px_rgba(17,19,21,0.04)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/30 focus-visible:ring-offset-2",
+            !activeCategoryId
+              ? "border-secondary bg-secondary text-white shadow-[0_8px_18px_rgba(185,19,23,0.18)]"
+              : "border-[#eadede] bg-white text-text-primary hover:border-secondary/50 hover:text-secondary",
+          ].join(" ")}
+        >
+          All
+        </button>
+        {categories.map((category) => (
           <button
-            key={category}
+            key={category.id}
             type="button"
-            aria-pressed={category === activeCategory}
-            onClick={() => setActiveCategory(category)}
+            aria-pressed={category.id === activeCategoryId}
+            onClick={() => onCategoryChange(category.id)}
             className={[
-              "h-9 rounded-[5px] px-5 text-[12px] font-bold transition-colors",
-              category === activeCategory
-                ? "bg-secondary text-white"
-                : "bg-[#f2f2f2] text-text-primary hover:bg-[#e8e8e8]",
+              "h-11 rounded-full border px-5 text-[12px] font-bold shadow-[0_1px_2px_rgba(17,19,21,0.04)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/30 focus-visible:ring-offset-2",
+              category.id === activeCategoryId
+                ? "border-secondary bg-secondary text-white shadow-[0_8px_18px_rgba(185,19,23,0.18)]"
+                : "border-[#eadede] bg-white text-text-primary hover:border-secondary/50 hover:text-secondary",
             ].join(" ")}
           >
-            {category}
+            {category.name}
           </button>
         ))}
       </div>
@@ -55,10 +91,10 @@ export default function BlogFilterToolbar() {
           />
           <input
             type="search"
-            value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
+            value={search}
+            onChange={(event) => onSearchChange(event.target.value)}
             placeholder="Search articles..."
-            className="h-9 w-full rounded-[5px] border border-[#e7e7e7] bg-white pl-11 pr-4 text-[12px] text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-secondary"
+            className="h-11 w-full rounded-[10px] border border-[#eadede] bg-white pl-11 pr-4 text-[12px] font-medium text-text-primary shadow-[0_1px_2px_rgba(17,19,21,0.04)] outline-none transition-colors placeholder:text-text-secondary focus:border-secondary focus:ring-2 focus:ring-secondary/20"
           />
         </label>
 
@@ -68,9 +104,9 @@ export default function BlogFilterToolbar() {
             aria-haspopup="listbox"
             aria-expanded={sortOpen}
             onClick={() => setSortOpen((open) => !open)}
-            className="flex h-9 min-w-[118px] items-center justify-between gap-5 rounded-[8px] border border-[#e7e7e7] bg-white px-4 text-[12px] font-medium text-text-primary transition-colors hover:border-[#d5d5d5]"
+            className="flex h-11 min-w-[132px] items-center justify-between gap-5 rounded-[10px] border border-[#eadede] bg-white px-4 text-[12px] font-semibold text-text-primary shadow-[0_1px_2px_rgba(17,19,21,0.04)] transition-colors hover:border-secondary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary/30"
           >
-            {selectedSort}
+            {getSortLabel(sort)}
             <ChevronDown
               size={14}
               className={sortOpen ? "rotate-180 transition-transform" : "transition-transform"}
@@ -86,22 +122,22 @@ export default function BlogFilterToolbar() {
             >
               {SORT_OPTIONS.map((option) => (
                 <button
-                  key={option}
+                  key={option.value}
                   type="button"
                   role="option"
-                  aria-selected={option === selectedSort}
+                  aria-selected={option.value === sort}
                   onClick={() => {
-                    setSelectedSort(option);
+                    onSortChange(option.value);
                     setSortOpen(false);
                   }}
                   className={[
                     "flex h-9 w-full items-center rounded-[9px] px-3 text-left text-[12px] font-medium transition-colors",
-                    option === selectedSort
+                    option.value === sort
                       ? "bg-[#fff0f0] text-secondary"
                       : "text-text-primary hover:bg-[#f5f5f5]",
                   ].join(" ")}
                 >
-                  {option}
+                  {option.label}
                 </button>
               ))}
             </div>

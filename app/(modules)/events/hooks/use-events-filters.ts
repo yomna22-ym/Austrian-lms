@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import type { ActiveFilterChip } from "@/app/shared/types/filter.types";
 import type { EventFilters, EventItem, EventTypeFilter } from "../types";
-import { DEFAULT_MAX_PRICE } from "../utils";
+import { DEFAULT_MAX_PRICE, EVENT_TYPES } from "../utils";
 
 function isSameDay(a: Date, b: Date): boolean {
   return (
@@ -61,12 +62,15 @@ function getActiveFilterCount(filters: EventFilters, defaultMaxPrice: number): n
   return count;
 }
 
-export function useEventsFilters(events: readonly EventItem[]) {
+export function useEventsFilters(
+  events: readonly EventItem[],
+  defaultMaxPrice: number = DEFAULT_MAX_PRICE,
+) {
   const [filters, setFilters] = useState<EventFilters>({
     selectedDate: null,
     eventType: "all",
     location: "all",
-    maxPrice: DEFAULT_MAX_PRICE,
+    maxPrice: defaultMaxPrice,
   });
 
   const filterKeyRef = useRef(0);
@@ -84,8 +88,8 @@ export function useEventsFilters(events: readonly EventItem[]) {
     [events, filters]
   );
   const activeFilterCount = useMemo(
-    () => getActiveFilterCount(filters, DEFAULT_MAX_PRICE),
-    [filters]
+    () => getActiveFilterCount(filters, defaultMaxPrice),
+    [filters, defaultMaxPrice]
   );
 
   const setSelectedDate = (selectedDate: Date | null) => {
@@ -107,15 +111,66 @@ export function useEventsFilters(events: readonly EventItem[]) {
     setFilters((current) => ({ ...current, maxPrice }));
   };
 
+  const commitMaxPrice = () => {
+    bumpFilterKey();
+  };
+
   const clearAllFilters = () => {
     setFilters({
       selectedDate: null,
       eventType: "all",
       location: "all",
-      maxPrice: DEFAULT_MAX_PRICE,
+      maxPrice: defaultMaxPrice,
     });
     bumpFilterKey();
   };
+
+  const activeChips = useMemo((): ActiveFilterChip[] => {
+    const chips: ActiveFilterChip[] = [];
+
+    if (filters.selectedDate) {
+      chips.push({
+        id: "date",
+        label: filters.selectedDate.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "short",
+        }),
+        onRemove: () => setSelectedDate(null),
+      });
+    }
+
+    if (filters.eventType !== "all") {
+      const typeLabel =
+        EVENT_TYPES.find((option) => option.value === filters.eventType)
+          ?.label ?? filters.eventType;
+      chips.push({
+        id: "type",
+        label: typeLabel,
+        onRemove: () => setEventType("all"),
+      });
+    }
+
+    if (filters.location !== "all") {
+      chips.push({
+        id: "location",
+        label: filters.location,
+        onRemove: () => setLocation("all"),
+      });
+    }
+
+    if (filters.maxPrice < defaultMaxPrice) {
+      chips.push({
+        id: "price",
+        label: `Up to ${filters.maxPrice.toLocaleString()} EGP`,
+        onRemove: () => {
+          setMaxPrice(defaultMaxPrice);
+          bumpFilterKey();
+        },
+      });
+    }
+
+    return chips;
+  }, [filters, defaultMaxPrice]);
 
   return {
     filters,
@@ -124,10 +179,12 @@ export function useEventsFilters(events: readonly EventItem[]) {
     eventDates,
     filteredEvents,
     activeFilterCount,
+    activeChips,
     setSelectedDate,
     setEventType,
     setLocation,
     setMaxPrice,
+    commitMaxPrice,
     clearAllFilters,
   };
 }

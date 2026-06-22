@@ -12,6 +12,7 @@ export function usePlacementNavigation() {
     goToTrainingMcqPractice: () =>
       router.push(PLACEMENT_TEST_ROUTES.trainingMcqPractice),
     goToLanding: () => router.push(PLACEMENT_TEST_ROUTES.landing),
+    goToContinue: () => router.push(PLACEMENT_TEST_ROUTES.continue),
     goToHome: () => router.push(HOME_ROUTE),
   };
 }

@@ -4,13 +4,17 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import Button from "@/app/shared/Button/Button";
 import { AUTH_ROUTES, WEBSITE_ROUTES } from "@/app/constants/routes";
+import { authService } from "@/app/(modules)/auth/services/auth.service";
+import { useAuthStore } from "@/stores/auth.store";
+import { NavbarAuthActions, NavbarAuthSkeleton } from "./navbar-auth-actions";
+import { NavbarMobileAuth } from "./navbar-mobile-auth";
+import { NavbarPlacementButton } from "./navbar-placement-button";
+import { NavbarProfileMenu } from "./navbar-profile-menu";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Courses", href: "/courses" },
-  { label: "Events", href: "/events" },
   { label: "Branches", href: "/branches" },
   { label: "Blogs", href: "/blogs" },
   { label: "Certificate", href: WEBSITE_ROUTES.certificates },
@@ -21,8 +25,20 @@ const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { user, isAuthenticated, hydrated } = useAuthStore();
 
-  // Lock body scroll when mobile menu is open
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await authService.logout();
+      setOpen(false);
+      router.push(AUTH_ROUTES.login);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -30,7 +46,6 @@ const Navbar = () => {
     };
   }, [open]);
 
-  // Close menu when viewport widens to desktop (≥1200px)
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1200) setOpen(false);
@@ -52,7 +67,6 @@ const Navbar = () => {
           : "relative bg-primary shadow-sm",
       ].join(" ")}
     >
-      {/* Bar — 72px tall at all widths */}
       <div
         className={[
           "mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 nav:px-8",
@@ -61,11 +75,9 @@ const Navbar = () => {
             : "lg:px-16",
         ].join(" ")}
       >
-
-        {/* Logo — nudged slightly left */}
         <Link
           href="/"
-          className="shrink-0 -ml-1 transition-opacity duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2 rounded-sm"
+          className="shrink-0 -ml-1 rounded-sm transition-opacity duration-200 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2"
           aria-label="Go to homepage"
         >
           <Image
@@ -78,7 +90,6 @@ const Navbar = () => {
           />
         </Link>
 
-        {/* Desktop nav — visible only at ≥1200px */}
         <nav aria-label="Main" className="hidden nav:flex items-center">
           <ul className="flex items-center gap-4 xl:gap-6">
             {NAV_LINKS.map(({ label, href }) => {
@@ -98,7 +109,6 @@ const Navbar = () => {
                     ].join(" ")}
                   >
                     {label}
-                    {/* Animated underline */}
                     <span
                       aria-hidden="true"
                       className={[
@@ -116,31 +126,23 @@ const Navbar = () => {
           </ul>
         </nav>
 
-        {/* Desktop buttons — visible only at ≥1200px */}
         <div className="hidden nav:flex items-center gap-3">
-          <Button
-            label="Sign up"
-            bgColorClass="bg-input-bg hover:bg-input-border border border-input-border"
-            textColorClass="text-secondary"
-            width="w-[92px]"
-            height="h-[51px]"
-            className="shadow-[0_1px_0_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:shadow-sm"
-            type="button"
-            onClick={() => router.push(AUTH_ROUTES.signup)}
-          />
-          <Button
-            label="Take Placement Test"
-            bgColorClass="bg-secondary hover:brightness-110"
-            textColorClass="text-primary"
-            width="w-[185px]"
-            height="h-[51px]"
-            className="shadow-sm hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 active:brightness-95 active:shadow-sm"
-            type="button"
-            onClick={() => router.push(WEBSITE_ROUTES.placementTest)}
-          />
+          {!hydrated ? (
+            <NavbarAuthSkeleton />
+          ) : isAuthenticated && user ? (
+            <>
+              <NavbarPlacementButton />
+              <NavbarProfileMenu
+                user={user}
+                isLoggingOut={isLoggingOut}
+                onLogout={() => void handleLogout()}
+              />
+            </>
+          ) : (
+            <NavbarAuthActions />
+          )}
         </div>
 
-        {/* Hamburger — visible below 1200px */}
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
@@ -174,7 +176,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile / tablet slide-down menu — shown below 1200px */}
       <div
         id="mobile-menu"
         aria-hidden={!open}
@@ -207,7 +208,6 @@ const Navbar = () => {
                         : "text-text-secondary hover:text-text-primary",
                     ].join(" ")}
                   >
-                    {/* Active left bar */}
                     <span
                       aria-hidden="true"
                       className={[
@@ -222,34 +222,15 @@ const Navbar = () => {
             })}
           </ul>
 
-          {/* CTA buttons — full width in drawer */}
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <Button
-              label="Sign up"
-              bgColorClass="bg-input-bg border border-input-border hover:bg-input-border"
-              textColorClass="text-text-primary"
-              width="w-full"
-              height="h-[51px]"
-              type="button"
-              onClick={() => {
-                setOpen(false);
-                router.push(AUTH_ROUTES.signup);
-              }}
-            />
-            <Button
-              label="Take Placement Test"
-              bgColorClass="bg-secondary hover:brightness-110"
-              textColorClass="text-primary"
-              width="w-full"
-              height="h-[51px]"
-              className="shadow-sm"
-              type="button"
-              onClick={() => {
-                setOpen(false);
-                router.push(WEBSITE_ROUTES.placementTest);
-              }}
-            />
-          </div>
+          <NavbarMobileAuth
+            user={user}
+            isAuthenticated={isAuthenticated}
+            hydrated={hydrated}
+            isLoggingOut={isLoggingOut}
+            onLogout={() => void handleLogout()}
+            onClose={() => setOpen(false)}
+            onNavigate={(href) => router.push(href)}
+          />
         </nav>
       </div>
     </header>

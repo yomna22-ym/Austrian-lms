@@ -1,4 +1,6 @@
 import type { TimelineStep } from "../utils";
+import { MotionLi, MotionSection } from "@/app/shared/Motion";
+import SectionHeader from "@/app/shared/SectionHeader";
 
 interface CertificationTimelineProps {
   steps: TimelineStep[];
@@ -8,10 +10,12 @@ export default function CertificationTimeline({
   steps,
 }: CertificationTimelineProps) {
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-16">
-      <h2 className="text-center text-2xl font-bold text-text-primary sm:text-3xl">
-        Streamlined Path to Certification
-      </h2>
+    <MotionSection className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:px-16">
+      <SectionHeader
+        eyebrow="How it works"
+        title="Streamlined Path to Certification"
+        description="Move from exam selection to confirmed preparation with a clear, low-friction process."
+      />
 
       <ol className="relative mt-12 grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-0">
         <span
@@ -19,7 +23,11 @@ export default function CertificationTimeline({
           aria-hidden="true"
         />
         {steps.map((step, index) => (
-          <li key={step.number} className="relative flex flex-col items-center text-center">
+          <MotionLi
+            key={step.number}
+            delay={index * 0.07}
+            className="relative flex flex-col items-center text-center"
+          >
             {index < steps.length - 1 && (
               <span
                 className="absolute left-[calc(50%+2rem)] top-8 z-20 hidden h-7 w-[calc(100%-4rem)] -translate-y-1/2 overflow-hidden md:block"
@@ -57,9 +65,9 @@ export default function CertificationTimeline({
             <p className="mt-3 max-w-[210px] text-[12px] leading-relaxed text-text-secondary">
               {step.description}
             </p>
-          </li>
+          </MotionLi>
         ))}
       </ol>
-    </section>
+    </MotionSection>
   );
 }

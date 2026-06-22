@@ -15,6 +15,7 @@ export interface EventItem {
   detailTitle?: string;
   description: string;
   image: string;
+  imageAlt?: string;
   gallery?: readonly string[];
   location: string;
   locationDetails?: BranchLocation;

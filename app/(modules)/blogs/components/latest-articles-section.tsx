@@ -1,85 +1,112 @@
 "use client";
 
-import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { MotionDiv, MotionSection } from "@/app/shared/Motion";
+import SectionHeader from "@/app/shared/SectionHeader";
 import BlogArticleCard from "./blog-article-card";
-import { LATEST_ARTICLES } from "../utils";
+import type { BlogArticle } from "../types";
+import type { PaginationMeta } from "@/types/api";
 
-const PAGE_ITEMS = ["1", "2", "3", "...", "12"] as const;
-type PageItem = (typeof PAGE_ITEMS)[number];
-type NumericPage = Exclude<PageItem, "...">;
+interface LatestArticlesSectionProps {
+  articles: BlogArticle[];
+  pagination: PaginationMeta;
+  loading?: boolean;
+  error?: string | null;
+  page: number;
+  filtersActive?: boolean;
+  onPageChange: (page: number) => void;
+}
 
-export default function LatestArticlesSection() {
-  const [activePage, setActivePage] = useState<NumericPage>("1");
-  const numericPages = PAGE_ITEMS.filter(
-    (page): page is NumericPage => page !== "..."
+export default function LatestArticlesSection({
+  articles,
+  pagination,
+  loading = false,
+  error,
+  page,
+  filtersActive = false,
+  onPageChange,
+}: LatestArticlesSectionProps) {
+  const pageNumbers = Array.from(
+    { length: pagination.totalPages },
+    (_, index) => index + 1,
   );
-  const activeIndex = numericPages.indexOf(activePage);
-
-  const goToPreviousPage = () => {
-    setActivePage(numericPages[Math.max(activeIndex - 1, 0)]);
-  };
-
-  const goToNextPage = () => {
-    setActivePage(numericPages[Math.min(activeIndex + 1, numericPages.length - 1)]);
-  };
 
   return (
-    <section className="mt-8">
-      <h2 className="text-[34px] font-extrabold leading-tight text-text-primary">
-        Latest Articles
-      </h2>
+    <MotionSection className="mt-16">
+      <SectionHeader
+        align="left"
+        eyebrow="Latest"
+        title="Latest Articles"
+        description="Fresh updates, learning advice, and institute news."
+      />
 
-      <div className="mt-7 grid grid-cols-1 gap-7 md:grid-cols-2 xl:grid-cols-3">
-        {LATEST_ARTICLES.map((article) => (
-          <BlogArticleCard
-            key={article.title}
-            {...article}
-            href="/blogs/coffee-house-phrases-vienna"
-            imageClassName="h-[188px]"
-            className="rounded-[8px] shadow-none"
-          />
-        ))}
-      </div>
+      {error ? (
+        <p className="mt-4 text-sm text-secondary">{error}</p>
+      ) : null}
 
-      <div className="mt-12 flex items-center justify-center gap-2">
-        <button
-          type="button"
-          aria-label="Previous page"
-          onClick={goToPreviousPage}
-          disabled={activePage === numericPages[0]}
-          className="flex h-9 w-9 items-center justify-center rounded-[5px] border border-[#e5e5e5] bg-white text-text-primary transition-colors hover:border-secondary disabled:opacity-50"
+      {!loading && articles.length === 0 ? (
+        <p className="mt-7 rounded-[16px] border border-dashed border-[#eadede] bg-[#fafafa] px-6 py-10 text-center text-[14px] text-text-secondary">
+          {filtersActive
+            ? "No articles match your filters. Try another category or search term."
+            : "No articles available yet."}
+        </p>
+      ) : (
+        <div
+          className={[
+            "mt-7 grid grid-cols-1 gap-7 md:grid-cols-2 xl:grid-cols-3",
+            loading ? "opacity-60" : "",
+          ].join(" ")}
         >
-          <ChevronLeft size={16} aria-hidden="true" />
-        </button>
-        {PAGE_ITEMS.map((page) => (
+          {articles.map((article, index) => (
+            <MotionDiv key={article.id} delay={index * 0.04} hoverLift>
+              <BlogArticleCard
+                {...article}
+                href={article.href}
+                imageClassName="h-[188px]"
+              />
+            </MotionDiv>
+          ))}
+        </div>
+      )}
+
+      {pagination.totalPages > 1 ? (
+        <div className="mt-12 flex items-center justify-center gap-2">
           <button
-            key={page}
             type="button"
-            disabled={page === "..."}
-            onClick={() => page !== "..." && setActivePage(page)}
-            aria-current={page === activePage ? "page" : undefined}
-            className={[
-              "flex h-9 min-w-9 items-center justify-center rounded-[5px] border px-3 text-[13px] font-bold",
-              page === activePage
-                ? "border-secondary bg-secondary text-white"
-                : "border-[#e5e5e5] bg-white text-text-primary",
-              page === "..." ? "cursor-default" : "transition-colors hover:border-secondary",
-            ].join(" ")}
+            aria-label="Previous page"
+            onClick={() => onPageChange(Math.max(1, page - 1))}
+            disabled={!pagination.hasPrevPage || loading}
+            className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-[#eadede] bg-white text-text-primary shadow-[0_1px_2px_rgba(17,19,21,0.04)] transition-colors hover:border-secondary disabled:opacity-50"
           >
-            {page}
+            <ChevronLeft size={16} aria-hidden="true" />
           </button>
-        ))}
-        <button
-          type="button"
-          aria-label="Next page"
-          onClick={goToNextPage}
-          disabled={activePage === numericPages[numericPages.length - 1]}
-          className="flex h-9 w-9 items-center justify-center rounded-[5px] border border-[#e5e5e5] bg-white text-text-primary transition-colors hover:border-secondary disabled:opacity-50"
-        >
-          <ChevronRight size={16} aria-hidden="true" />
-        </button>
-      </div>
-    </section>
+          {pageNumbers.map((pageNumber) => (
+            <button
+              key={pageNumber}
+              type="button"
+              onClick={() => onPageChange(pageNumber)}
+              aria-current={pageNumber === page ? "page" : undefined}
+              className={[
+                "flex h-11 min-w-11 items-center justify-center rounded-[10px] border px-3 text-[13px] font-bold shadow-[0_1px_2px_rgba(17,19,21,0.04)]",
+                pageNumber === page
+                  ? "border-secondary bg-secondary text-white"
+                  : "border-[#e5e5e5] bg-white text-text-primary transition-colors hover:border-secondary",
+              ].join(" ")}
+            >
+              {pageNumber}
+            </button>
+          ))}
+          <button
+            type="button"
+            aria-label="Next page"
+            onClick={() => onPageChange(page + 1)}
+            disabled={!pagination.hasNextPage || loading}
+            className="flex h-11 w-11 items-center justify-center rounded-[10px] border border-[#eadede] bg-white text-text-primary shadow-[0_1px_2px_rgba(17,19,21,0.04)] transition-colors hover:border-secondary disabled:opacity-50"
+          >
+            <ChevronRight size={16} aria-hidden="true" />
+          </button>
+        </div>
+      ) : null}
+    </MotionSection>
   );
 }

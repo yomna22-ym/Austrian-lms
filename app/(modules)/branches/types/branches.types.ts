@@ -6,6 +6,8 @@ export interface GlobalLocation {
   id: string;
   country: string;
   cities: string;
+  addressLink?: string;
+  description?: string;
 }
 
 export interface BranchesHeroContent {

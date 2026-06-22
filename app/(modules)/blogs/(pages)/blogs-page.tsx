@@ -1,32 +1,17 @@
-import PageIntro from "@/app/shared/PageIntro";
-import {
-  BlogCallToAction,
-  BlogFilterToolbar,
-  FeaturedArticlesSection,
-  LatestArticlesSection,
-  TopArticlesSection,
-} from "../components";
+import { loadBlogsPageData } from "../utils/blogs.loader";
+import BlogsPageClient from "./blogs-page-client";
 
-export default function BlogsPage() {
+export default async function BlogsPage() {
+  const data = await loadBlogsPageData();
+
   return (
-    <div className="w-full bg-[linear-gradient(110deg,#ffffff_0%,#ffffff_56%,#fff2f2_100%)]">
-      <PageIntro
-        title="Cultural Journal"
-        description="Exploring the life, language, and culture of Austria. Insights from our experts and stories from the heart of Europe."
-      />
-      <main className="w-full px-4 py-14 sm:px-6 lg:px-16">
-        <div className="mx-auto max-w-7xl">
-          <BlogFilterToolbar />
-
-          <div className="mt-16">
-            <FeaturedArticlesSection />
-            <TopArticlesSection />
-            <LatestArticlesSection />
-          </div>
-        </div>
-      </main>
-
-      <BlogCallToAction />
-    </div>
+    <BlogsPageClient
+      intro={data.intro}
+      initialFeatured={data.featured}
+      initialTop={data.top}
+      initialLatest={data.latest}
+      initialPagination={data.pagination}
+      categories={data.categories}
+    />
   );
 }

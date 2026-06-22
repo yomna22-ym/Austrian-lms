@@ -8,6 +8,7 @@ interface PriceRangeSliderProps {
   step: number;
   value: number;
   onChange: (value: number) => void;
+  onCommit?: () => void;
 }
 
 export default function PriceRangeSlider({
@@ -16,6 +17,7 @@ export default function PriceRangeSlider({
   step,
   value,
   onChange,
+  onCommit,
 }: PriceRangeSliderProps) {
   const fillPercent = ((value - min) / (max - min)) * 100;
 
@@ -36,6 +38,9 @@ export default function PriceRangeSlider({
           step={step}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
+          onMouseUp={onCommit}
+          onTouchEnd={onCommit}
+          onKeyUp={onCommit}
           className="price-range-slider h-2 w-full cursor-pointer appearance-none rounded-full"
           style={{
             background: `linear-gradient(to right, var(--color-secondary) 0%, var(--color-secondary) ${fillPercent}%, var(--color-input-border) ${fillPercent}%, var(--color-input-border) 100%)`,

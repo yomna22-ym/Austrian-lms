@@ -32,7 +32,6 @@ export type PolicySection = {
   bullets?: string[];
   bulletGroups?: PolicyBulletGroup[];
   subsections?: PolicySubsection[];
-  footerBody?: string[];
   table?: PolicyTable;
   links?: PolicySectionLink[];
   variant?: "default" | "warning" | "info";
@@ -56,7 +55,7 @@ export const POLICY_NAV_ITEMS = [
   },
   {
     key: "terms" as const,
-    label: "Terms and Conditions",
+    label: "Terms of Service",
     href: POLICY_ROUTES.terms,
   },
   {
@@ -100,12 +99,12 @@ export const termsContent: PolicyDocumentContent = {
   eyebrow: "Austrian Institute in Egypt",
   title: "Terms and Conditions",
   description:
-    "By accessing, browsing, registering through, paying through, or using the Austrian Institute website, mobile application, student portal, placement test services, course booking services, online learning services, Paymob online payment services, support services, or related services, you agree to be bound by these Terms and Conditions.",
+    "The rules that govern platform access, placement tests, course booking, payments, refunds, certificates, student conduct, and related Institute services.",
   effectiveDate: "Current policy",
   highlights: [
-    "Enrollment is confirmed only when the required payment is completed and the Operations team approves the seat based on payment status, branch availability, classroom capacity, teacher availability, and course/group availability.",
-    "The placement test fee is EGP 300 and is non-refundable once paid.",
-    "Deposit payment is EGP 1,000 and is non-refundable under all circumstances.",
+    "Enrollment is confirmed only after required payment and Operations approval.",
+    "The EGP 1,000 deposit and EGP 300 placement test fee are non-refundable once paid.",
+    "Course cancellation and transfer rules depend on the number of days before the course start date.",
   ],
   sections: [
     {
@@ -118,11 +117,11 @@ export const termsContent: PolicyDocumentContent = {
     {
       title: "Definitions",
       bullets: [
-        "“Institute,” “we,” “us,” and “our” mean Austrian Institute in Egypt and its authorized administrative team.",
-        "“Platform” means the website, mobile app, student portal, Odoo LMS, Paymob payment flow, TrueForm assessment tools, support tools, and related digital services.",
-        "“Student,” “you,” and “your” mean any person who browses courses, books a placement test, registers for a course, pays a fee, attends a class, or uses Institute services.",
-        "“Course” means any German language course, group class, mini group, private session, SprachCafé activity, or approved learning program offered by the Institute.",
-        "“Operations team” means the team responsible for confirming course assignment, payment status, group availability, schedule, branch capacity, and seat confirmation.",
+        "Institute, we, us, and our mean Austrian Institute in Egypt and its authorized administrative team.",
+        "Platform means the website, mobile app, student portal, Odoo LMS, Paymob payment flow, TrueForm assessment tools, support tools, and related digital services.",
+        "Student, you, and your mean any person who browses courses, books a placement test, registers for a course, pays a fee, attends a class, or uses Institute services.",
+        "Course means any German language course, group class, mini group, private session, SprachCafe activity, or approved learning program offered by the Institute.",
+        "Operations team means the team responsible for confirming course assignment, payment status, group availability, schedule, branch capacity, and seat confirmation.",
       ],
     },
     {
@@ -171,34 +170,41 @@ export const termsContent: PolicyDocumentContent = {
       body: [
         "The standard course price is EGP 3,000 unless a different price is shown for a specific course or segment.",
         "Deposit payment is EGP 1,000 and is non-refundable under all circumstances.",
-        "A 50% course payment of EGP 1,500 may include 1 complimentary SprachCafé ticket, subject to availability and Institute policy.",
-        "A full course payment of EGP 3,000 may include 2 complimentary SprachCafé tickets, subject to availability and Institute policy.",
-        "Complimentary SprachCafé tickets are promotional benefits. They are not exchangeable for cash and may be subject to validity, booking, schedule, or availability rules.",
+        "A 50% course payment of EGP 1,500 may include 1 complimentary SprachCafe ticket, subject to availability and Institute policy.",
+        "A full course payment of EGP 3,000 may include 2 complimentary SprachCafe tickets, subject to availability and Institute policy.",
+        "Complimentary SprachCafe tickets are promotional benefits. They are not exchangeable for cash and may be subject to validity, booking, schedule, or availability rules.",
       ],
     },
     {
       title: "Cancellation and Refund Rules",
       body: [
-        "If the student cancels the enrollment within 3 days before the course start date, a 100% deduction will apply. The student will not be eligible for a refund or enrollment transfer.",
-        "If the student cancels the enrollment from 3 to 5 days before the course start date, a 40% deduction will apply. The student will receive a 60% refund or may request to transfer the enrollment to another available course date, subject to availability.",
+        "Course cancellation, refund, and transfer eligibility depend on the timing of the request before the course start date.",
       ],
-      subsections: [
+      bullets: [
+        "Student cancellation within 3 days before the course start date: 100% deduction; no refund and no transfer allowed.",
+        "Student cancellation or transfer request from 3 to 5 days before the course start date: 40% deduction; the student may receive a 60% refund or request an approved transfer to a future course, subject to availability and Institute approval.",
+        "Student cancellation more than 5 days before the course start date: full refund of the course fee; an administrative bank-transfer fee of EGP 100 may be deducted when processing the refund, or the student may transfer to another course without additional fees.",
+        "Course cancellation or postponement by the Institute: full refund or transfer to another available course date without any additional fees.",
+      ],
+      links: [
         {
-          title: "Transfer to a Future Course After Approved 3–5 Day Request",
-          body: [
-            "If a student requests a transfer to a future course within the period of 3 to 5 days before the course start date, and the transfer is approved under the applicable refund policy, the student acknowledges and agrees to the following:",
-          ],
-          bullets: [
-            "Only one transfer is permitted after the original reservation.",
-            "If operational adjustments, scheduling changes, course cancellations, or course consolidations occur, the student agrees to comply with the alternative course dates or arrangements provided by the Institute.",
-            "Any subsequent transfer requests, cancellations, postponements, or schedule modifications initiated by the student after the approved transfer will not be permitted.",
-            "The transferred registration becomes final and non-transferable after the first approved transfer.",
-          ],
+          prefix: "For the complete refund schedule, transfer rules, and request process, see the ",
+          label: "Refund Policy",
+          href: POLICY_ROUTES.refund,
+          suffix: ".",
         },
       ],
-      footerBody: [
-        "If the student cancels the enrollment more than 5 days before the course start date, the student is eligible to receive a full refund of the course fee. However, an administrative transfer fee of EGP 100 will be deducted when processing the refund.",
-        "If the Institute cancels or postpones the course, the student may choose either to receive a full refund or transfer the enrollment to another available course date without any additional fees.",
+    },
+    {
+      title: "Transfer to a Future Course After Approved 3-5 Day Request",
+      body: [
+        "If a student requests a transfer to a future course within the period of 3 to 5 days before the course start date, and the transfer is approved under the applicable refund policy, the student acknowledges and agrees to the following:",
+      ],
+      bullets: [
+        "Only one transfer is permitted after the original reservation.",
+        "If operational adjustments, scheduling changes, course cancellations, or course consolidations occur, the student agrees to comply with the alternative course dates or arrangements provided by the Institute.",
+        "Any subsequent transfer requests, cancellations, postponements, or schedule modifications initiated by the student after the approved transfer will not be permitted.",
+        "The transferred registration becomes final and non-transferable after the first approved transfer.",
       ],
     },
     {
@@ -261,12 +267,12 @@ export const refundContent: PolicyDocumentContent = {
   eyebrow: "Austrian Institute in Egypt",
   title: "Refund Policy",
   description:
-    "This Refund Policy applies to placement test fees, course fees, deposits, partial payments, books, digital materials, private sessions, extra sessions, hardcopy certificates, certificate name-change requests, and other approved services provided by the Institute.",
+    "Refund eligibility, cancellation timing, transfer rules, deposit terms, and the official process for requesting refunds across Institute services.",
   effectiveDate: "Current policy",
   highlights: [
-    "The placement test fee is EGP 300. The placement test fee is non-refundable once paid.",
-    "Course cancellation, refund, and transfer eligibility depend on the timing of the request before the course start date:",
-    "Once the course has started, meaning after the first session has been held, the course fee is non-refundable.",
+    "Placement test fee (EGP 300) is non-refundable once paid.",
+    "Cancellation outcome depends on how many days remain before the course start date.",
+    "After the first session, course fees are non-refundable except in exceptional circumstances.",
   ],
   sections: [
     {
@@ -287,12 +293,36 @@ export const refundContent: PolicyDocumentContent = {
       body: [
         "Course cancellation, refund, and transfer eligibility depend on the timing of the request before the course start date:",
       ],
-      bullets: [
-        "Student cancellation within 3 days before the course start date: 100% deduction; no refund and no transfer allowed.",
-        "Student cancellation or transfer request from 3 to 5 days before the course start date: 40% deduction; the student may receive a 60% refund or request an approved transfer to a future course, subject to availability and Institute approval.",
-        "Student cancellation more than 5 days before the course start date: full refund of the course fee; an administrative bank-transfer fee of EGP 100 may be deducted when processing the refund, or the student may transfer to another course without additional fees.",
-        "Course cancellation or postponement by the Institute: full refund or transfer to another available course date without any additional fees.",
-      ],
+      table: {
+        caption: "Course cancellation refund and transfer schedule",
+        headers: ["When you cancel", "Deduction", "Refund", "Transfer"],
+        rows: [
+          [
+            "Within 3 days before course start",
+            "100%",
+            "None",
+            "Not allowed",
+          ],
+          [
+            "3 to 5 days before course start",
+            "40%",
+            "60% refund",
+            "Approved transfer available",
+          ],
+          [
+            "More than 5 days before course start",
+            "EGP 100 bank-transfer fee",
+            "Full course fee",
+            "Free transfer option",
+          ],
+          [
+            "Institute cancels or postpones",
+            "None",
+            "Full refund",
+            "Free transfer",
+          ],
+        ],
+      },
       subsections: [
         {
           title: "Transfer to a Future Course After Approved 3–5 Day Request",
@@ -336,8 +366,25 @@ export const refundContent: PolicyDocumentContent = {
       variant: "info",
       body: [
         "To request a refund, the student must submit the request through the official support channel or contact the Institute using the official contact details.",
-        "The refund request should include the student name, registered email, phone number, course or service name, payment reference, cancellation date, reason for request, and supporting documents where applicable.",
-        "Approved refunds are processed through the original payment method where possible and are subject to bank or payment gateway processing timelines. Bank or payment gateway fees may apply where relevant.",
+        "The refund request should include the following information:",
+      ],
+      bullets: [
+        "Student name",
+        "Registered email",
+        "Phone number",
+        "Course or service name",
+        "Payment reference",
+        "Cancellation date",
+        "Reason for request",
+        "Supporting documents where applicable",
+      ],
+      subsections: [
+        {
+          title: "Processing",
+          body: [
+            "Approved refunds are processed through the original payment method where possible and are subject to bank or payment gateway processing timelines. Bank or payment gateway fees may apply where relevant.",
+          ],
+        },
       ],
     },
   ],
@@ -348,12 +395,12 @@ export const privacyContent: PolicyDocumentContent = {
   eyebrow: "Austrian Institute in Egypt",
   title: "Privacy Policy",
   description:
-    "This Privacy Policy explains how the Institute collects, uses, shares, stores, and protects student information when students use the website, mobile app, student portal, placement test services, course booking services, Paymob online payment services, support services, and related digital services.",
+    "How the Institute collects, uses, shares, stores, and protects student information across website, mobile app, portal, payment, and support services.",
   effectiveDate: "Current policy",
   highlights: [
-    "The Institute may collect student information needed to provide educational and payment services.",
-    "Payments may be processed through Paymob. The platform should not store full card details.",
-    "Students may request access to, correct, or review of their personal information, subject to academic, payment, certificate, legal, finance, and operational record requirements.",
+    "Student information is collected only as needed for educational and payment services.",
+    "Full card details are not stored by the platform; payments may be processed through Paymob.",
+    "Students may request access to or correction of personal information, subject to legal and operational requirements.",
   ],
   sections: [
     {
@@ -366,12 +413,44 @@ export const privacyContent: PolicyDocumentContent = {
       title: "Information We Collect",
       body: [
         "The Institute may collect student information needed to provide educational and payment services.",
-        "Account and contact data: name, phone number, email address, city, country, date of birth, language preference, and account details.",
-        "Student profile data: passport screenshot, National ID screenshot, Goethe-Institut certificate where applicable, branch, course level, group, schedule, and emergency contact where required.",
-        "Learning and assessment data: placement test data, level result, assignments, quizzes, speaking tasks, writing tasks, grades, attendance records, teacher feedback, and certificate eligibility status.",
-        "Payment data: payment status, transaction reference, deposit status, partial payment status, refund status, and billing-related information processed by Paymob or approved payment channels.",
-        "Support and communication data: support requests, complaints, retest requests, payment issues, schedule issues, chat/group communication data where enabled, and service notifications.",
-        "Technical data: device type, browser type, IP address, log data, app version, crash data, cookies, permissions, and usage interactions where needed for platform operation and security.",
+      ],
+      bulletGroups: [
+        {
+          label: "Account and contact data",
+          items: [
+            "Name, phone number, email address, city, country, date of birth, language preference, and account details.",
+          ],
+        },
+        {
+          label: "Student profile data",
+          items: [
+            "Passport screenshot, National ID screenshot, Goethe-Institut certificate where applicable, branch, course level, group, schedule, and emergency contact where required.",
+          ],
+        },
+        {
+          label: "Learning and assessment data",
+          items: [
+            "Placement test data, level result, assignments, quizzes, speaking tasks, writing tasks, grades, attendance records, teacher feedback, and certificate eligibility status.",
+          ],
+        },
+        {
+          label: "Payment data",
+          items: [
+            "Payment status, transaction reference, deposit status, partial payment status, refund status, and billing-related information processed by Paymob or approved payment channels.",
+          ],
+        },
+        {
+          label: "Support and communication data",
+          items: [
+            "Support requests, complaints, retest requests, payment issues, schedule issues, chat/group communication data where enabled, and service notifications.",
+          ],
+        },
+        {
+          label: "Technical data",
+          items: [
+            "Device type, browser type, IP address, log data, app version, crash data, cookies, permissions, and usage interactions where needed for platform operation and security.",
+          ],
+        },
       ],
     },
     {
@@ -403,7 +482,7 @@ export const privacyContent: PolicyDocumentContent = {
       title: "Marketing and Promotional Communications",
       body: [
         "Required service messages may include payment confirmations, failed payment alerts, placement test access messages, course enrollment status, schedule updates, session cancellation updates, assignment reminders, certificate eligibility updates, support ticket updates, and policy updates.",
-        "Marketing and promotional communications, such as course offers, event promotions, SprachCafé announcements, community updates, TestDaF promotions, blog/news updates, campaigns, or partner announcements, are optional and subject to approved consent and Institute policy. Opting out of marketing does not stop required service messages.",
+        "Marketing and promotional communications, such as course offers, event promotions, SprachCafe announcements, community updates, TestDaF promotions, blog/news updates, campaigns, or partner announcements, are optional and subject to approved consent and Institute policy. Opting out of marketing does not stop required service messages.",
       ],
     },
     {
@@ -459,7 +538,7 @@ export const legalNoticeContent: PolicyDocumentContent = {
   highlights: [
     "Services are provided by Austrian Institute in Egypt and its authorized administrative team.",
     "Institute materials and assessments are owned by the Institute or licensed partners.",
-    "Questions should be directed to the official Institute contact channels.",
+    "Questions about refunds and payments are covered in the Refund Policy.",
   ],
   sections: [
     {
@@ -481,6 +560,20 @@ export const legalNoticeContent: PolicyDocumentContent = {
       body: [
         "Enrollment is confirmed only when the required payment is completed and the Operations team approves the seat based on payment status, branch availability, classroom capacity, teacher availability, and course/group availability.",
         "A payment confirmation does not exceed academic, capacity, eligibility, or Operations approval requirements.",
+      ],
+    },
+    {
+      title: "Payments and Refunds",
+      body: [
+        "Online payments may be processed through Paymob. The platform does not store full card details.",
+      ],
+      links: [
+        {
+          prefix: "For cancellation timing, refund eligibility, transfer rules, and the refund request process, see the ",
+          label: "Refund Policy",
+          href: POLICY_ROUTES.refund,
+          suffix: ".",
+        },
       ],
     },
     {

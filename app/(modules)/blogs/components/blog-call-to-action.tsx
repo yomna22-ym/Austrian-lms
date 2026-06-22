@@ -3,15 +3,16 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Button from "@/app/shared/Button/Button";
+import { MotionDiv, MotionSection } from "@/app/shared/Motion";
 import { AUTH_ROUTES } from "@/app/constants/routes";
 
 export default function BlogCallToAction() {
   const router = useRouter();
 
   return (
-    <section className="w-full bg-white px-4 py-24 sm:px-6 lg:px-16">
+    <MotionSection className="w-full bg-white px-4 py-24 sm:px-6 lg:px-16">
       <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 lg:grid-cols-[1fr_1fr] lg:gap-20">
-        <div className="relative flex justify-center lg:justify-start">
+        <MotionDiv className="relative flex justify-center lg:justify-start">
           <Image
             src="/calltoaction.svg"
             alt="Students learning together"
@@ -19,9 +20,9 @@ export default function BlogCallToAction() {
             height={360}
             className="h-auto w-full max-w-[560px]"
           />
-        </div>
+        </MotionDiv>
 
-        <div className="max-w-xl text-center lg:text-left">
+        <MotionDiv delay={0.08} className="max-w-xl text-center lg:text-left">
           <h2 className="text-[38px] font-extrabold leading-tight text-[#08251f] sm:text-[44px]">
             Join <span className="text-secondary">World&apos;s largest</span>
             <br />
@@ -38,8 +39,8 @@ export default function BlogCallToAction() {
             onClick={() => router.push(AUTH_ROUTES.signup)}
             className="mt-8 rounded-[6px] text-[13px] font-bold"
           />
-        </div>
+        </MotionDiv>
       </div>
-    </section>
+    </MotionSection>
   );
 }

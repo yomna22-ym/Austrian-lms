@@ -2,16 +2,23 @@
 
 import { SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { EventItem } from "../types";
+import ActiveFilterChips from "@/app/shared/ActiveFilterChips";
+import type { EventItem, PriceRange } from "../types";
 import { useEventsFilters } from "../hooks/use-events-filters";
 import EventsFiltersSidebar from "./events-filters-sidebar";
 import EventsGrid from "./events-grid";
 
 interface EventsListingProps {
-  events: readonly EventItem[];
+  initialEvents: readonly EventItem[];
+  defaultMaxPrice: number;
+  priceRange: PriceRange;
 }
 
-export default function EventsListing({ events }: EventsListingProps) {
+export default function EventsListing({
+  initialEvents,
+  defaultMaxPrice,
+  priceRange,
+}: EventsListingProps) {
   const {
     filters,
     filterKey,
@@ -19,12 +26,14 @@ export default function EventsListing({ events }: EventsListingProps) {
     eventDates,
     filteredEvents,
     activeFilterCount,
+    activeChips,
     setSelectedDate,
     setEventType,
     setLocation,
     setMaxPrice,
+    commitMaxPrice,
     clearAllFilters,
-  } = useEventsFilters(events);
+  } = useEventsFilters(initialEvents, defaultMaxPrice);
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -44,10 +53,12 @@ export default function EventsListing({ events }: EventsListingProps) {
       filters={filters}
       locations={locations}
       eventDates={eventDates}
+      priceRange={priceRange}
       onDateChange={setSelectedDate}
       onEventTypeChange={setEventType}
       onLocationChange={setLocation}
       onMaxPriceChange={setMaxPrice}
+      onMaxPriceCommit={commitMaxPrice}
       onClearAll={clearAllFilters}
       activeFilterCount={activeFilterCount}
       onClose={() => setDrawerOpen(false)}
@@ -88,22 +99,40 @@ export default function EventsListing({ events }: EventsListingProps) {
 
           {/* Grid + result count */}
           <div className="flex flex-col gap-6">
-            <div className="hidden items-center justify-between lg:flex">
-              <p className="text-sm font-medium text-text-secondary">
-                <span className="font-bold text-text-primary">{filteredEvents.length}</span>{" "}
-                {filteredEvents.length === 1 ? "event" : "events"} found
-              </p>
-              {activeFilterCount > 0 && (
-                <button
-                  type="button"
-                  onClick={clearAllFilters}
-                  className="flex items-center gap-1.5 text-sm font-medium text-secondary transition-opacity hover:opacity-70"
-                >
-                  <X size={14} />
-                  Clear filters
-                </button>
-              )}
+            <div className="hidden flex-col gap-4 lg:flex">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-text-secondary">
+                  <span className="font-bold text-text-primary tabular-nums">
+                    {filteredEvents.length}
+                  </span>{" "}
+                  {filteredEvents.length === 1 ? "event" : "events"} found
+                </p>
+                {activeFilterCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={clearAllFilters}
+                    className="flex items-center gap-1.5 text-sm font-medium text-secondary transition-opacity hover:opacity-70"
+                  >
+                    <X size={14} />
+                    Clear filters
+                  </button>
+                )}
+              </div>
+              <ActiveFilterChips
+                chips={activeChips}
+                onClearAll={clearAllFilters}
+              />
             </div>
+
+            {activeFilterCount > 0 && (
+              <div className="lg:hidden">
+                <ActiveFilterChips
+                  chips={activeChips}
+                  onClearAll={clearAllFilters}
+                />
+              </div>
+            )}
+
             <EventsGrid events={filteredEvents} filterKey={filterKey} />
           </div>
         </div>

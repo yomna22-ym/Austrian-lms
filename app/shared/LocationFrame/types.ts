@@ -5,4 +5,6 @@ export interface BranchLocation {
   phone?: string;
   lat: number;
   lng: number;
+  addressLink?: string;
+  hasCoordinates?: boolean;
 }

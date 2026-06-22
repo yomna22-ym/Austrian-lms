@@ -15,7 +15,9 @@ import Breadcrumbs from "@/app/shared/Breadcrumbs";
 import MapPreview from "@/app/shared/MapPreview";
 import SurfaceCard from "@/app/shared/SurfaceCard";
 import { WEBSITE_ROUTES } from "@/app/constants/routes";
-import { MOCK_EVENTS } from "../../utils";
+import { isRemoteAssetUrl } from "@/lib/asset-url";
+import { toGoogleMapsEmbedUrl } from "@/app/shared/utils/location.utils";
+import { loadEventDetail } from "../../utils/events.loader";
 
 interface EventDetailPageProps {
   params: Promise<{ id: string }>;
@@ -42,7 +44,7 @@ function formatCompactDate(date: Date) {
 
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
   const { id } = await params;
-  const event = MOCK_EVENTS.find((item) => item.id === id);
+  const event = await loadEventDetail(id);
 
   if (!event) notFound();
 
@@ -56,11 +58,11 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   const locationText = [event.location, event.room].filter(Boolean).join(", ");
   const capacityText = event.capacity ? `${event.capacity} Persons` : "25 Persons";
   const tags = event.tags ?? ["Workshop", "Community", "German Practice"];
-  const about = event.about ?? [
-    event.description,
-    "Meet fellow learners, practice in small groups, and enjoy a guided cultural session led by the Österreich Institut team.",
-  ];
-  const gallery = event.gallery ?? fallbackGallery;
+  const about = event.about ?? [event.description];
+  const gallery =
+    event.gallery && event.gallery.length > 0
+      ? event.gallery
+      : fallbackGallery;
 
   return (
     <main className="bg-[linear-gradient(90deg,#ffffff_0%,#ffffff_62%,#fff4f4_100%)]">
@@ -78,11 +80,12 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             <div className="relative overflow-hidden rounded-[8px]">
               <Image
                 src={event.image}
-                alt={title}
+                alt={event.imageAlt ?? title}
                 width={780}
                 height={438}
                 priority
                 className="h-[260px] w-full object-cover sm:h-[390px]"
+                unoptimized={isRemoteAssetUrl(event.image)}
               />
 
               <div className="absolute left-4 top-4 flex h-[70px] w-[58px] flex-col items-center justify-center rounded-[8px] bg-secondary text-white shadow-[0_10px_18px_rgba(17,19,21,0.18)]">
@@ -155,12 +158,6 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
-            <button
-              type="button"
-              className="mt-4 text-[16px] font-bold text-secondary transition hover:brightness-90"
-            >
-              Read more
-            </button>
           </section>
 
           {event.locationDetails && (
@@ -169,11 +166,22 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                 Location
               </h2>
               <div className="relative mt-5 overflow-hidden rounded-[8px]">
-                <MapPreview
-                  location={event.locationDetails}
-                  popupLabel={event.locationDetails.name}
-                  className="h-[300px] rounded-[8px] ring-1 ring-input-border sm:h-[320px]"
-                />
+                {event.locationDetails.hasCoordinates ? (
+                  <MapPreview
+                    location={event.locationDetails}
+                    popupLabel={event.locationDetails.name}
+                    className="h-[300px] rounded-[8px] ring-1 ring-input-border sm:h-[320px]"
+                  />
+                ) : event.locationDetails.addressLink ? (
+                  <iframe
+                    title={`Map of ${event.locationDetails.name}`}
+                    src={toGoogleMapsEmbedUrl(event.locationDetails.addressLink)}
+                    className="h-[300px] w-full rounded-[8px] border-0 ring-1 ring-input-border sm:h-[320px]"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
+                ) : null}
                 <SurfaceCard className="absolute bottom-5 left-5 z-[1000] max-w-[270px] rounded-[8px] p-4">
                   <div className="flex items-start gap-3">
                     <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-secondary" />
@@ -181,9 +189,21 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                       <p className="text-[14px] font-bold text-text-primary">
                         {event.locationDetails.name}
                       </p>
-                      <p className="mt-1 text-[13px] leading-snug text-text-secondary">
-                        {event.locationDetails.address}
-                      </p>
+                      {event.locationDetails.address ? (
+                        <p className="mt-1 text-[13px] leading-snug text-text-secondary">
+                          {event.locationDetails.address}
+                        </p>
+                      ) : null}
+                      {event.locationDetails.addressLink ? (
+                        <a
+                          href={event.locationDetails.addressLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-secondary px-4 py-2 text-[12px] font-semibold text-white transition hover:brightness-110"
+                        >
+                          Open in Google Maps
+                        </a>
+                      ) : null}
                     </div>
                   </div>
                 </SurfaceCard>
@@ -196,14 +216,16 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
               <h2 className="text-[28px] font-extrabold text-text-primary">
                 Past Events Gallery
               </h2>
-              <p className="text-[13px] text-text-secondary">
-                Last updated {event.lastUpdated ?? "26.07.24"}
-              </p>
+              {event.lastUpdated ? (
+                <p className="text-[13px] text-text-secondary">
+                  Last updated {event.lastUpdated}
+                </p>
+              ) : null}
             </div>
             <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
               {gallery.slice(0, 3).map((image, index) => (
                 <div
-                  key={image}
+                  key={`${image}-${index}`}
                   className="relative h-[170px] overflow-hidden rounded-[8px]"
                 >
                   <Image
@@ -212,11 +234,12 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                     fill
                     className="object-cover"
                     sizes="(max-width: 640px) 100vw, 220px"
+                    unoptimized={isRemoteAssetUrl(image)}
                   />
-                  {index === 2 && (
+                  {index === 2 && gallery.length > 3 && (
                     <div className="absolute inset-0 flex items-center justify-center bg-secondary/70">
                       <span className="text-[24px] font-extrabold text-white">
-                        +12 more
+                        +{gallery.length - 3} more
                       </span>
                     </div>
                   )}
@@ -237,7 +260,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                   {event.price} EGP
                 </p>
               </div>
-              {event.seatsLeft && (
+              {event.seatsLeft != null && (
                 <span className="rounded-full border border-[#f6dfad] bg-[#fff8df] px-3 py-1.5 text-[12px] font-bold text-[#c87500]">
                   {event.seatsLeft} seats left
                 </span>

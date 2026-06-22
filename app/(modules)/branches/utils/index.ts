@@ -6,3 +6,9 @@ export {
   EGYPT_BRANCHES_COPY,
 } from "./branches.constants";
 export { findNearestBranch, getDistanceKm } from "./geo.utils";
+export {
+  mapBranchToGlobalLocation,
+  mapBranchToLocalLocation,
+  mapGlobalBranches,
+  mapLocalBranches,
+} from "./branches.mapper";
