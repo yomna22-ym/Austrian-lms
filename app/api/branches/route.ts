@@ -61,13 +61,6 @@ export async function GET(request: Request) {
     };
 
     if (!hasLmsWebhookSecret()) {
-      if (process.env.NODE_ENV === "production") {
-        return Response.json(
-          { message: "LMS webhook integration is not configured", statusCode: 503 },
-          { status: 503 },
-        );
-      }
-
       return jsonData(getLocalBranchFallback(query));
     }
 
