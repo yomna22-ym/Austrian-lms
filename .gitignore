@@ -25,6 +25,10 @@
 *.pem
 /public/Downloads/*
 !/public/Downloads/coursecatalog.jpg
+!/public/Downloads/anavodafone-logo.webp
+!/public/Downloads/orange-logo.webp
+!/public/Downloads/e&-etisalat-logo.webp
+!/public/Downloads/meeza-seeklogo.png
 
 # debug
 npm-debug.log*
