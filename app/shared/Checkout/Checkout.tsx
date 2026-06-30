@@ -12,11 +12,13 @@ import {
   LockKeyhole,
   Shield,
   ShieldCheck,
+  Smartphone,
 } from "lucide-react";
 import Input from "@/app/shared/Input/Input";
 import Button from "@/app/shared/Button/Button";
 
-type PaymentMethod = "card" | "paypal" | "fawry" | "valu" | "vodafone";
+type PaymentMethod = "paymob";
+type PaymobSubMethod = "card" | "mobile_wallet";
 
 export interface CheckoutItem {
   image?: string;
@@ -51,13 +53,6 @@ interface CheckoutProps {
   paymentPlans?: CheckoutPaymentPlan[];
   defaultPaymentPlanId?: string;
 }
-
-const methodRows = [
-  { id: "paypal" as const, label: "PayPal", logo: <PayPalLogo /> },
-  { id: "fawry" as const, label: "Fawry", logo: <FawryLogo /> },
-  { id: "valu" as const, label: "valU", logo: <ValuLogo /> },
-  { id: "vodafone" as const, label: "Vodafone Cash", logo: <VodafoneLogo /> },
-];
 
 function StepBadge({ children }: { children: React.ReactNode }) {
   return (
@@ -148,11 +143,7 @@ function MethodRow({
           onChange={onSelect}
           className="h-5 w-5 cursor-pointer accent-secondary"
         />
-        {id === "card" ? (
-          <CreditCard className="h-5 w-5 text-text-secondary" aria-hidden="true" />
-        ) : (
-          <Banknote className="h-5 w-5 text-text-secondary" aria-hidden="true" />
-        )}
+        <Banknote className="h-5 w-5 text-text-secondary" aria-hidden="true" />
         <span className="text-[16px] font-medium text-text-primary">{label}</span>
       </span>
       {logo}
@@ -160,30 +151,48 @@ function MethodRow({
   );
 }
 
-function PayPalLogo() {
-  return <span className="text-[28px] font-extrabold text-[#12327a]">P</span>;
-}
-
-function FawryLogo() {
+function MobileWalletOption({
+  id,
+  label,
+  logo,
+  selected,
+  onSelect,
+}: {
+  id: PaymobSubMethod;
+  label: string;
+  logo: React.ReactNode;
+  selected: boolean;
+  onSelect: () => void;
+}) {
   return (
-    <span className="rounded bg-[#ffe34d] px-2 py-1 text-[12px] font-extrabold text-[#0b67b2]">
-      fawry
-    </span>
+    <label
+      htmlFor={`pm-paymob-${id}`}
+      className={[
+        "flex h-[52px] cursor-pointer items-center gap-3 rounded-[8px] border px-4 transition-colors",
+        selected
+          ? "border-secondary bg-white"
+          : "border-[#e8e2e2] bg-white hover:border-secondary/50",
+      ].join(" ")}
+    >
+      <input
+        id={`pm-paymob-${id}`}
+        type="radio"
+        name="paymob-option"
+        value={id}
+        checked={selected}
+        onChange={onSelect}
+        className="h-4 w-4 cursor-pointer accent-secondary"
+      />
+      {logo}
+      <span className="text-[16px] font-medium text-text-primary">{label}</span>
+    </label>
   );
 }
 
-function ValuLogo() {
+function PaymobLogo() {
   return (
-    <span className="text-[20px] font-extrabold text-[#00a99d]">
-      valu<span className="text-secondary">*</span>
-    </span>
-  );
-}
-
-function VodafoneLogo() {
-  return (
-    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-[9px] font-bold text-white">
-      cash
+    <span className="text-[18px] font-extrabold text-[#293681]">
+      paymob
     </span>
   );
 }
@@ -230,11 +239,13 @@ export default function Checkout({
   defaultPaymentPlanId,
 }: CheckoutProps) {
   const router = useRouter();
-  const [method, setMethod] = useState<PaymentMethod>("card");
+  const [method, setMethod] = useState<PaymentMethod>("paymob");
+  const [paymobOption, setPaymobOption] = useState<PaymobSubMethod>("card");
   const [cardName, setCardName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
+  const [walletNumber, setWalletNumber] = useState("");
   const [selectedPlanId, setSelectedPlanId] = useState(
     defaultPaymentPlanId ?? paymentPlans[0]?.id ?? ""
   );
@@ -285,81 +296,122 @@ export default function Checkout({
               Select Payment Method
             </h2>
             <div className="mt-5 grid gap-4">
+              {/* Paymob – parent gateway */}
               <MethodRow
-                id="card"
-                label="Credit / Debit Card"
-                logo={null}
-                selected={method === "card"}
-                onSelect={() => setMethod("card")}
+                id="paymob"
+                label="Paymob"
+                logo={<PaymobLogo />}
+                selected={method === "paymob"}
+                onSelect={() => setMethod("paymob")}
               />
 
-              {method === "card" && (
-                <div className="grid gap-4">
-                  <Input
-                    label="Cardholder Name"
-                    width="w-full"
-                    height="h-[52px]"
-                    placeholder="e.g. Maria Muller"
-                    value={cardName}
-                    onChange={setCardName}
-                    autoComplete="cc-name"
-                  />
-                  <Input
-                    label="Card Number"
-                    width="w-full"
-                    height="h-[52px]"
-                    placeholder="0000 0000 0000 0000"
-                    value={cardNumber}
-                    onChange={setCardNumber}
-                    autoComplete="cc-number"
-                    suffix={
-                      <span
-                        className="rounded bg-[#e8e8e8] px-1.5 py-0.5 text-[10px] font-bold text-text-secondary"
+              {/* Paymob sub-options */}
+              {method === "paymob" && (
+                <div className="ml-4 flex flex-col gap-3 border-l-2 border-[#efb8b8] pl-4">
+                  {/* Credit / Debit Card */}
+                  <MobileWalletOption
+                    id="card"
+                    label="Credit / Debit Card"
+                    logo={
+                      <CreditCard
+                        className="h-5 w-5 text-text-secondary"
                         aria-hidden="true"
-                      >
-                        CC
-                      </span>
+                      />
                     }
+                    selected={paymobOption === "card"}
+                    onSelect={() => setPaymobOption("card")}
                   />
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <Input
-                      label="Expiry Date"
-                      width="w-full"
-                      height="h-[52px]"
-                      placeholder="MM/YY"
-                      value={expiry}
-                      onChange={setExpiry}
-                      autoComplete="cc-exp"
-                    />
-                    <Input
-                      label="CVV"
-                      width="w-full"
-                      height="h-[52px]"
-                      placeholder="123"
-                      value={cvv}
-                      onChange={setCvv}
-                      autoComplete="cc-csc"
-                      suffix={
-                        <HelpCircle
-                          className="h-4 w-4 text-text-secondary"
-                          aria-label="3-digit security code on the back of your card"
+
+                  {/* Mobile Wallet */}
+                  <MobileWalletOption
+                    id="mobile_wallet"
+                    label="Mobile Wallet"
+                    logo={
+                      <Smartphone
+                        className="h-5 w-5 text-text-secondary"
+                        aria-hidden="true"
+                      />
+                    }
+                    selected={paymobOption === "mobile_wallet"}
+                    onSelect={() => setPaymobOption("mobile_wallet")}
+                  />
+
+                  {/* Card form */}
+                  {paymobOption === "card" && (
+                    <div className="grid gap-4">
+                      <Input
+                        label="Cardholder Name"
+                        width="w-full"
+                        height="h-[52px]"
+                        placeholder="e.g. Maria Muller"
+                        value={cardName}
+                        onChange={setCardName}
+                        autoComplete="cc-name"
+                      />
+                      <Input
+                        label="Card Number"
+                        width="w-full"
+                        height="h-[52px]"
+                        placeholder="0000 0000 0000 0000"
+                        value={cardNumber}
+                        onChange={setCardNumber}
+                        autoComplete="cc-number"
+                        suffix={
+                          <span
+                            className="rounded bg-[#e8e8e8] px-1.5 py-0.5 text-[10px] font-bold text-text-secondary"
+                            aria-hidden="true"
+                          >
+                            CC
+                          </span>
+                        }
+                      />
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <Input
+                          label="Expiry Date"
+                          width="w-full"
+                          height="h-[52px]"
+                          placeholder="MM/YY"
+                          value={expiry}
+                          onChange={setExpiry}
+                          autoComplete="cc-exp"
                         />
-                      }
-                    />
-                  </div>
+                        <Input
+                          label="CVV"
+                          width="w-full"
+                          height="h-[52px]"
+                          placeholder="123"
+                          value={cvv}
+                          onChange={setCvv}
+                          autoComplete="cc-csc"
+                          suffix={
+                            <HelpCircle
+                              className="h-4 w-4 text-text-secondary"
+                              aria-label="3-digit security code on the back of your card"
+                            />
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile Wallet form */}
+                  {paymobOption === "mobile_wallet" && (
+                    <div className="grid gap-4">
+                      <Input
+                        label="Mobile Wallet Number"
+                        width="w-full"
+                        height="h-[52px]"
+                        placeholder="01XX XXX XXXX"
+                        value={walletNumber}
+                        onChange={setWalletNumber}
+                      />
+                      <p className="text-[13px] text-text-secondary">
+                        You will receive a confirmation prompt on your phone to complete the payment.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
-
-              {methodRows.map((row) => (
-                <MethodRow
-                  key={row.id}
-                  id={row.id}
-                  label={row.label}
-                  logo={row.logo}
-                  selected={method === row.id}
-                  onSelect={() => setMethod(row.id)}
-                />
-              ))}
             </div>
           </div>
 
